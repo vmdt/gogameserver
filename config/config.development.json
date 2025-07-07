@@ -1,0 +1,17 @@
+{
+    "logger": {
+        "level": "debug"
+    },
+    "echo": {
+        "port": ":8080",
+        "base_path": "/api/v1",
+        "development": true
+    },
+    "postgresDb": {
+        "host": "localhost",
+        "port": 5432,
+        "user": "postgres",
+        "password": "password",
+        "dbName": "gogameserver"
+    }
+}
