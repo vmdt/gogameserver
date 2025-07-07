@@ -12,3 +12,12 @@ type Room struct {
 	CreatedAt time.Time `gorm:"autoCreateTime" json:"created_at"`
 	UpdatedAt time.Time `gorm:"autoUpdateTime" json:"updated_at"`
 }
+
+func NewRoom(status string) *Room {
+	return &Room{
+		ID:        uuid.New(),
+		Status:    status,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
+}

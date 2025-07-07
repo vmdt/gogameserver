@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/vmdt/gogameserver/config"
-	"github.com/vmdt/gogameserver/modules/room"
+	room_api "github.com/vmdt/gogameserver/modules/room/api"
 	echoserver "github.com/vmdt/gogameserver/pkg/echo"
 	"github.com/vmdt/gogameserver/pkg/http"
 	"github.com/vmdt/gogameserver/pkg/logger"
@@ -21,8 +21,8 @@ func main() {
 				echoserver.NewEchoServer,
 				postgresgorm.NewGorm,
 			),
-			room.Configuration(),
 			fx.Invoke(server.RunAPIServer),
+			room_api.Startup(),
 		),
 	).Run()
 }
