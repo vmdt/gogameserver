@@ -31,6 +31,7 @@ func main() {
 			room_api.Startup(),
 			fx.Invoke(server.RunAPIServer),
 			fx.Invoke(configurations.ConfigSwagger),
+			fx.Invoke(configurations.ConfigMiddleware),
 		),
 	).Run()
 }
