@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/go-playground/validator"
 	"github.com/vmdt/gogameserver/config"
 	player_api "github.com/vmdt/gogameserver/modules/player/api"
 	room_api "github.com/vmdt/gogameserver/modules/room/api"
@@ -21,6 +22,7 @@ func main() {
 				http.NewContext,
 				echoserver.NewEchoServer,
 				postgresgorm.NewGorm,
+				validator.New,
 			),
 			fx.Invoke(server.RunAPIServer),
 			player_api.Startup(),

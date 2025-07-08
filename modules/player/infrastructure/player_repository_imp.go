@@ -10,7 +10,7 @@ type PlayerRepositoryImp struct {
 	playerDbContext *PlayerDbContext
 }
 
-func NewPlayerRepositoryImp(playerDbContext *PlayerDbContext) domain.IPlayerRepository {
+func NewPlayerRepository(playerDbContext *PlayerDbContext) domain.IPlayerRepository {
 	return &PlayerRepositoryImp{
 		playerDbContext: playerDbContext,
 	}
