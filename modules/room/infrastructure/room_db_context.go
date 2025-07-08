@@ -3,7 +3,6 @@ package infrastructure
 import (
 	"context"
 
-	"github.com/vmdt/gogameserver/modules/room/domain"
 	"gorm.io/gorm"
 )
 
@@ -19,6 +18,6 @@ func NewRoomDbContext(db *gorm.DB, ctx context.Context) *RoomDbContext {
 	}
 }
 
-func (r *RoomDbContext) GetModelDB() *gorm.DB {
-	return r.db.Model(&domain.Room{})
+func (r *RoomDbContext) GetModelDB(model interface{}) *gorm.DB {
+	return r.db.Model(model)
 }

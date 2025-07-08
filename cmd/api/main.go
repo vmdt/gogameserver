@@ -10,6 +10,7 @@ import (
 	"github.com/vmdt/gogameserver/pkg/logger"
 	"github.com/vmdt/gogameserver/pkg/postgresgorm"
 	"github.com/vmdt/gogameserver/server"
+	"github.com/vmdt/gogameserver/server/configurations"
 	"go.uber.org/fx"
 )
 
@@ -24,9 +25,10 @@ func main() {
 				postgresgorm.NewGorm,
 				validator.New,
 			),
-			fx.Invoke(server.RunAPIServer),
 			player_api.Startup(),
 			room_api.Startup(),
+			fx.Invoke(server.RunAPIServer),
+			fx.Invoke(configurations.ConfigSwagger),
 		),
 	).Run()
 }

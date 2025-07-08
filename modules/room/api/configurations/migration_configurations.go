@@ -7,7 +7,7 @@ import (
 )
 
 func ConfigMigrations(dbContext *infrastructure.RoomDbContext, log logger.ILogger) error {
-	db := dbContext.GetModelDB()
+	db := dbContext.GetModelDB(&domain.Room{})
 	hasTable := db.Migrator().HasTable(&domain.Room{})
 
 	if !hasTable {

@@ -7,17 +7,18 @@ import (
 )
 
 type Room struct {
-	ID        uuid.UUID `gorm:"type:uuid;primaryKey" json:"id"`
-	Status    string    `gorm:"type:varchar(50)" json:"status"`
-	CreatedAt time.Time `gorm:"autoCreateTime" json:"created_at"`
-	UpdatedAt time.Time `gorm:"autoUpdateTime" json:"updated_at"`
+	ID        uuid.UUID  `gorm:"type:uuid;primaryKey" json:"id"`
+	Status    string     `gorm:"type:varchar(50)" json:"status"`
+	CreatedAt *time.Time `gorm:"autoCreateTime" json:"created_at"`
+	UpdatedAt *time.Time `gorm:"autoUpdateTime" json:"updated_at"`
 }
 
 func NewRoom(status string) *Room {
+	now := time.Now()
 	return &Room{
 		ID:        uuid.New(),
 		Status:    status,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		CreatedAt: &now,
+		UpdatedAt: &now,
 	}
 }

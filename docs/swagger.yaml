@@ -1,0 +1,89 @@
+definitions:
+  commands.PlayerCreateRoomCommand:
+    properties:
+      name:
+        type: string
+      user_id:
+        type: string
+    required:
+    - name
+    type: object
+  dtos.PlayerDTO:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: string
+    type: object
+  dtos.RoomDTO:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: string
+      status:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  dtos.RoomPlayerDTO:
+    properties:
+      disconnected_at:
+        type: string
+      is_disconnected:
+        type: boolean
+      is_ready:
+        type: boolean
+      player:
+        $ref: '#/definitions/dtos.PlayerDTO'
+      player_id:
+        type: string
+      room:
+        $ref: '#/definitions/dtos.RoomDTO'
+      room_id:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /api/v1/room/player/create:
+    post:
+      consumes:
+      - application/json
+      description: Allows a player to create a new room with a name and user ID
+      parameters:
+      - description: Player Create Room Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/commands.PlayerCreateRoomCommand'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.RoomPlayerDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Player creates a new room
+      tags:
+      - Room.Player
+swagger: "2.0"

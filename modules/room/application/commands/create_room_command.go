@@ -43,8 +43,8 @@ func (h *CreateRoomHandler) Handle(ctx context.Context, command *CreateRoomComma
 	response := &dtos.RoomDTO{
 		ID:        r.ID.String(),
 		Status:    r.Status,
-		CreatedAt: r.CreatedAt.String(),
-		UpdatedAt: r.UpdatedAt.String(),
+		CreatedAt: r.CreatedAt,
+		UpdatedAt: r.UpdatedAt,
 	}
 	return response, nil
 }

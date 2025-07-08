@@ -5,13 +5,26 @@ import (
 
 	"github.com/mehdihadeli/go-mediatr"
 	"github.com/vmdt/gogameserver/modules/room/application/commands"
+	player_room_cmd "github.com/vmdt/gogameserver/modules/room/application/commands/player_room"
 	"github.com/vmdt/gogameserver/modules/room/application/query"
 	"github.com/vmdt/gogameserver/modules/room/domain"
+	"github.com/vmdt/gogameserver/modules/room/infrastructure"
 	"github.com/vmdt/gogameserver/pkg/logger"
 )
 
-func ConfigRoomMediator(log logger.ILogger, ctx context.Context, roomRepo domain.IRoomRepository) error {
+func ConfigRoomMediator(log logger.ILogger, ctx context.Context, roomRepo domain.IRoomRepository, db *infrastructure.RoomDbContext) error {
 	err := mediatr.RegisterRequestHandler(commands.NewCreateRoomHandler(log, ctx, roomRepo))
+	if err != nil {
+		return err
+	}
+
+	err = mediatr.RegisterRequestHandler(commands.NewPlayerCreateRoomHandler(log, ctx, roomRepo))
+	if err != nil {
+		return err
+	}
+
+	// Register internal command handler for creating room players
+	err = mediatr.RegisterRequestHandler(player_room_cmd.NewInternalCreateRoomPlayerCommandHandler(log, ctx, db))
 	if err != nil {
 		return err
 	}
