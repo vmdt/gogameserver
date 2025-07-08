@@ -9,6 +9,7 @@ import (
 	player_dtos "github.com/vmdt/gogameserver/modules/player/application/dtos"
 	player_room_cmd "github.com/vmdt/gogameserver/modules/room/application/commands/player_room"
 	"github.com/vmdt/gogameserver/modules/room/application/dtos"
+	"github.com/vmdt/gogameserver/modules/room/application/events"
 	"github.com/vmdt/gogameserver/modules/room/domain"
 	"github.com/vmdt/gogameserver/pkg/logger"
 )
@@ -55,6 +56,12 @@ func (h *PlayerCreateRoomHandler) Handle(ctx context.Context, command *PlayerCre
 
 	roomPlayer, err := mediatr.Send[*player_room_cmd.InternalCreateRoomPlayerCommand, *domain.RoomPlayer](ctx, player_room_cmd.NewInternalCreateRoomPlayerCommand(room.ID.String(), player.ID))
 	if err != nil {
+		return nil, err
+	}
+
+	createRoomEvent := events.NewCreateRoomEvent(roomPlayer.RoomId.String(), roomPlayer.PlayerId.String())
+	if err := mediatr.Publish[*events.CreateRoomEvent](ctx, createRoomEvent); err != nil {
+		h.log.Error("Failed to publish CreateRoomEvent", "error", err)
 		return nil, err
 	}
 

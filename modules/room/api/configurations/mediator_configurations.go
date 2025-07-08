@@ -4,15 +4,23 @@ import (
 	"context"
 
 	"github.com/mehdihadeli/go-mediatr"
+	"github.com/redis/go-redis/v9"
 	"github.com/vmdt/gogameserver/modules/room/application/commands"
 	player_room_cmd "github.com/vmdt/gogameserver/modules/room/application/commands/player_room"
+	"github.com/vmdt/gogameserver/modules/room/application/events"
 	"github.com/vmdt/gogameserver/modules/room/application/query"
 	"github.com/vmdt/gogameserver/modules/room/domain"
 	"github.com/vmdt/gogameserver/modules/room/infrastructure"
 	"github.com/vmdt/gogameserver/pkg/logger"
 )
 
-func ConfigRoomMediator(log logger.ILogger, ctx context.Context, roomRepo domain.IRoomRepository, db *infrastructure.RoomDbContext) error {
+func ConfigRoomMediator(
+	log logger.ILogger,
+	ctx context.Context,
+	roomRepo domain.IRoomRepository,
+	db *infrastructure.RoomDbContext,
+	redisClient *redis.Client,
+) error {
 	err := mediatr.RegisterRequestHandler(commands.NewCreateRoomHandler(log, ctx, roomRepo))
 	if err != nil {
 		return err
@@ -30,6 +38,12 @@ func ConfigRoomMediator(log logger.ILogger, ctx context.Context, roomRepo domain
 	}
 
 	err = mediatr.RegisterRequestHandler(query.NewGetRoomHandler(log, ctx, roomRepo))
+	if err != nil {
+		return err
+	}
+
+	// Register events
+	err = mediatr.RegisterNotificationHandler(events.NewCreateRoomEventHandler(log, ctx, redisClient))
 	if err != nil {
 		return err
 	}

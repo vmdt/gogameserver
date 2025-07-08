@@ -11,6 +11,7 @@ import (
 	echoserver "github.com/vmdt/gogameserver/pkg/echo"
 	"github.com/vmdt/gogameserver/pkg/logger"
 	"github.com/vmdt/gogameserver/pkg/postgresgorm"
+	redis2 "github.com/vmdt/gogameserver/pkg/redis"
 )
 
 var configPath string
@@ -20,7 +21,7 @@ type Config struct {
 	// Rabbitmq   *rabbitmq.RabbitMQConfig         `mapstructure:"rabbitmq"`
 	Echo       *echoserver.EchoConfig           `mapstructure:"echo"`
 	PostgresDb *postgresgorm.GormPostgresConfig `mapstructure:"postgresDb"`
-	// Redis      *redis2.RedisOptions             `mapstructure:"redis"`
+	Redis      *redis2.RedisOptions             `mapstructure:"redis"`
 }
 
 func InitConfig() (
@@ -29,7 +30,7 @@ func InitConfig() (
 	*postgresgorm.GormPostgresConfig,
 	// *rabbitmq.RabbitMQConfig,
 	*echoserver.EchoConfig,
-	// *redis2.RedisOptions,
+	*redis2.RedisOptions,
 	error,
 ) {
 	env := os.Getenv("APP_ENV")
@@ -46,7 +47,7 @@ func InitConfig() (
 			//https://stackoverflow.com/questions/18537257/how-to-get-the-directory-of-the-currently-running-file
 			d, err := dirname()
 			if err != nil {
-				return nil, nil, nil, nil, err
+				return nil, nil, nil, nil, nil, err
 			}
 
 			configPath = d
@@ -59,14 +60,14 @@ func InitConfig() (
 	viper.SetConfigType("json")
 
 	if err := viper.ReadInConfig(); err != nil {
-		return nil, nil, nil, nil, errors.Wrap(err, "viper.ReadInConfig")
+		return nil, nil, nil, nil, nil, errors.Wrap(err, "viper.ReadInConfig")
 	}
 
 	if err := viper.Unmarshal(cfg); err != nil {
-		return nil, nil, nil, nil, errors.Wrap(err, "viper.Unmarshal")
+		return nil, nil, nil, nil, nil, errors.Wrap(err, "viper.Unmarshal")
 	}
 
-	return cfg, cfg.Logger, cfg.PostgresDb, cfg.Echo, nil
+	return cfg, cfg.Logger, cfg.PostgresDb, cfg.Echo, cfg.Redis, nil
 
 }
 

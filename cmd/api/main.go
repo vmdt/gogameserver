@@ -9,6 +9,7 @@ import (
 	"github.com/vmdt/gogameserver/pkg/http"
 	"github.com/vmdt/gogameserver/pkg/logger"
 	"github.com/vmdt/gogameserver/pkg/postgresgorm"
+	redis2 "github.com/vmdt/gogameserver/pkg/redis"
 	"github.com/vmdt/gogameserver/server"
 	"github.com/vmdt/gogameserver/server/configurations"
 	"go.uber.org/fx"
@@ -24,6 +25,7 @@ func main() {
 				echoserver.NewEchoServer,
 				postgresgorm.NewGorm,
 				validator.New,
+				redis2.NewRedisClient,
 			),
 			player_api.Startup(),
 			room_api.Startup(),
