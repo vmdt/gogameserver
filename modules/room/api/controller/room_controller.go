@@ -13,6 +13,7 @@ func RoomRoute(echo *echo.Echo, ctx context.Context, log logger.ILogger, validat
 	group := echo.Group("/api/v1/room")
 
 	group.POST("/player/create", handler.PlayerCreateRoomHandler(validator, ctx))
+	group.POST("/player/join", handler.PlayerJoinRoomHandler(validator, ctx))
 
 	group.POST("/create", handler.CreateRoomHandler())
 	group.GET("/:id", handler.GetRoomHandler())

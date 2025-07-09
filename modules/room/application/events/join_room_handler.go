@@ -8,21 +8,21 @@ import (
 	"github.com/vmdt/gogameserver/pkg/logger"
 )
 
-type CreateRoomEventHandler struct {
+type JoinRoomEventHandler struct {
 	log         logger.ILogger
 	ctx         context.Context
 	redisClient *redis.Client
 }
 
-func NewCreateRoomEventHandler(log logger.ILogger, ctx context.Context, redisClient *redis.Client) *CreateRoomEventHandler {
-	return &CreateRoomEventHandler{
+func NewJoinRoomEventHandler(log logger.ILogger, ctx context.Context, redisClient *redis.Client) *JoinRoomEventHandler {
+	return &JoinRoomEventHandler{
 		log:         log,
 		ctx:         ctx,
 		redisClient: redisClient,
 	}
 }
 
-func (h *CreateRoomEventHandler) Handle(ctx context.Context, event *CreateRoomEvent) error {
+func (h *JoinRoomEventHandler) Handle(ctx context.Context, event *JoinRoomEvent) error {
 	roomId := event.RoomId
 	playerId := event.PlayerId
 

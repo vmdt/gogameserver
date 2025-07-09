@@ -1,12 +1,12 @@
 package events
 
-type CreateRoomEvent struct {
+type JoinRoomEvent struct {
 	RoomId   string `json:"room_id"`
 	PlayerId string `json:"player_id"`
 }
 
-func NewCreateRoomEvent(roomId, playerId string) *CreateRoomEvent {
-	return &CreateRoomEvent{
+func NewJoinRoomEvent(roomId, playerId string) *JoinRoomEvent {
+	return &JoinRoomEvent{
 		RoomId:   roomId,
 		PlayerId: playerId,
 	}

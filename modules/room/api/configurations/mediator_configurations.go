@@ -31,6 +31,11 @@ func ConfigRoomMediator(
 		return err
 	}
 
+	err = mediatr.RegisterRequestHandler(commands.NewJoinRoomHandler(log, ctx, roomRepo, db))
+	if err != nil {
+		return err
+	}
+
 	// Register internal command handler for creating room players
 	err = mediatr.RegisterRequestHandler(player_room_cmd.NewInternalCreateRoomPlayerCommandHandler(log, ctx, db))
 	if err != nil {
@@ -43,7 +48,7 @@ func ConfigRoomMediator(
 	}
 
 	// Register events
-	err = mediatr.RegisterNotificationHandler(events.NewCreateRoomEventHandler(log, ctx, redisClient))
+	err = mediatr.RegisterNotificationHandler(events.NewJoinRoomEventHandler(log, ctx, redisClient))
 	if err != nil {
 		return err
 	}

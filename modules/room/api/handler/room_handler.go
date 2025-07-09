@@ -74,3 +74,35 @@ func PlayerCreateRoomHandler(validator *validator.Validate, ctx context.Context)
 		return c.JSON(200, result)
 	}
 }
+
+// @Summary      Player joins a room
+// @Description  Allows a player to join an existing room with a name, user ID,
+// @Tags         Room.Player
+// @Accept       json
+// @Produce      json
+// @Param        request  body      commands.JoinRoomCommand  true  "Player Join Room
+// @Success      200      {object}  dtos.RoomPlayerDTO
+// @Failure      400      {object}  map[string]string
+// @Failure      500      {object}  map[string]string
+// @Router       /api/v1/room/player/join [post]
+func PlayerJoinRoomHandler(validator *validator.Validate, ctx context.Context) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		request := &commands.JoinRoomCommand{}
+		if err := c.Bind(request); err != nil {
+			return c.JSON(400, map[string]string{"error": "Invalid request body"})
+		}
+
+		if err := validator.StructCtx(ctx, request); err != nil {
+			return c.JSON(400, map[string]string{"error": err.Error()})
+		}
+
+		cmd := commands.NewJoinRoomCommand(request.Name, request.UserId, request.PlayerId, request.RoomId)
+
+		result, err := mediatr.Send[*commands.JoinRoomCommand, *dtos.RoomPlayerDTO](ctx, cmd)
+
+		if err != nil {
+			return c.JSON(500, map[string]string{"error": err.Error()})
+		}
+		return c.JSON(200, result)
+	}
+}
