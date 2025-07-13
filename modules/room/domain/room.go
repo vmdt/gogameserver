@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/vmdt/gogameserver/modules/room/application/dtos"
 )
 
 type Room struct {
@@ -20,5 +21,14 @@ func NewRoom(status string) *Room {
 		Status:    status,
 		CreatedAt: &now,
 		UpdatedAt: &now,
+	}
+}
+
+func (r *Room) ToDTO() *dtos.RoomDTO {
+	return &dtos.RoomDTO{
+		ID:        r.ID.String(),
+		Status:    r.Status,
+		CreatedAt: r.CreatedAt,
+		UpdatedAt: r.UpdatedAt,
 	}
 }

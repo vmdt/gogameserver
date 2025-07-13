@@ -17,3 +17,8 @@ type PlayerCreateRoomDTO struct {
 	Room   RoomDTO         `json:"room"`
 	Player *dtos.PlayerDTO `json:"player"`
 }
+
+type RoomInformationDTO struct {
+	Room    RoomDTO          `json:"room"`
+	Players []*RoomPlayerDTO `json:"players"`
+}

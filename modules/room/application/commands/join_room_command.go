@@ -60,12 +60,20 @@ func (h *JoinRoomHandler) Handle(ctx context.Context, command *JoinRoomCommand) 
 		return nil, errors.New("room is not in lobby status")
 	}
 
+	var roomPlayerCount int64
+	if err := h.dbContext.GetModelDB(&domain.RoomPlayer{}).Where("room_id = ?", existingRoom.ID).Count(&roomPlayerCount).Error; err != nil {
+		return nil, err
+	}
+	if roomPlayerCount >= 2 {
+		return nil, errors.New("room is full")
+	}
+
 	player, err := mediatr.Send[*commands.CreatePlayerCommand, *player_dtos.PlayerDTO](ctx, commands.NewCreatePlayerCommand(command.Name, command.UserId))
 	if err != nil {
 		return nil, err
 	}
 
-	roomPlayer, err := mediatr.Send[*player_room_cmd.InternalCreateRoomPlayerCommand, *domain.RoomPlayer](ctx, player_room_cmd.NewInternalCreateRoomPlayerCommand(command.RoomId, player.ID))
+	roomPlayer, err := mediatr.Send[*player_room_cmd.InternalCreateRoomPlayerCommand, *domain.RoomPlayer](ctx, player_room_cmd.NewInternalCreateRoomPlayerCommand(command.RoomId, player.ID, false))
 	if err != nil {
 		return nil, err
 	}

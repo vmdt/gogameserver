@@ -1,4 +1,18 @@
 definitions:
+  commands.JoinRoomCommand:
+    properties:
+      name:
+        type: string
+      player_id:
+        type: string
+      room_id:
+        type: string
+      user_id:
+        type: string
+    required:
+    - name
+    - room_id
+    type: object
   commands.PlayerCreateRoomCommand:
     properties:
       name:
@@ -38,6 +52,8 @@ definitions:
         type: string
       is_disconnected:
         type: boolean
+      is_host:
+        type: boolean
       is_ready:
         type: boolean
       player:
@@ -49,9 +65,64 @@ definitions:
       room_id:
         type: string
     type: object
+  player_room_cmd.UpdateRoomPlayerCommand:
+    properties:
+      disconnected_at:
+        type: string
+      is_disconnected:
+        type: boolean
+      is_host:
+        type: boolean
+      is_ready:
+        type: boolean
+    type: object
 info:
   contact: {}
 paths:
+  /api/v1/room/{room_id}/players/{player_id}:
+    put:
+      consumes:
+      - application/json
+      description: Partially updates the information of a player in a room.
+      parameters:
+      - description: Room ID (UUID)
+        in: path
+        name: room_id
+        required: true
+        type: string
+      - description: Player ID (UUID)
+        in: path
+        name: player_id
+        required: true
+        type: string
+      - description: Fields to update
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/player_room_cmd.UpdateRoomPlayerCommand'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.RoomPlayerDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update a player in a room
+      tags:
+      - Room.Players
   /api/v1/room/player/create:
     post:
       consumes:
@@ -84,6 +155,40 @@ paths:
               type: string
             type: object
       summary: Player creates a new room
+      tags:
+      - Room.Player
+  /api/v1/room/player/join:
+    post:
+      consumes:
+      - application/json
+      description: Allows a player to join an existing room with a name, user ID,
+      parameters:
+      - description: Player Join Room
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/commands.JoinRoomCommand'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.RoomPlayerDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Player joins a room
       tags:
       - Room.Player
 swagger: "2.0"

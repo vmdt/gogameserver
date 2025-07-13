@@ -10,6 +10,7 @@ type RoomPlayerDTO struct {
 	IsReady        bool       `json:"is_ready"`
 	IsDisconnected bool       `json:"is_disconnected"`
 	DisconnectedAt *time.Time `json:"disconnected_at,omitempty"`
+	IsHost         bool       `json:"is_host"`
 
 	RoomId   string          `json:"room_id"`
 	PlayerId string          `json:"player_id"`

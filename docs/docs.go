@@ -66,9 +66,148 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/api/v1/room/player/join": {
+            "post": {
+                "description": "Allows a player to join an existing room with a name, user ID,",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Room.Player"
+                ],
+                "summary": "Player joins a room",
+                "parameters": [
+                    {
+                        "description": "Player Join Room",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/commands.JoinRoomCommand"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dtos.RoomPlayerDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/room/{room_id}/players/{player_id}": {
+            "put": {
+                "description": "Partially updates the information of a player in a room.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Room.Players"
+                ],
+                "summary": "Update a player in a room",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Room ID (UUID)",
+                        "name": "room_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Player ID (UUID)",
+                        "name": "player_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Fields to update",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/player_room_cmd.UpdateRoomPlayerCommand"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dtos.RoomPlayerDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "commands.JoinRoomCommand": {
+            "type": "object",
+            "required": [
+                "name",
+                "room_id"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "player_id": {
+                    "type": "string"
+                },
+                "room_id": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
         "commands.PlayerCreateRoomCommand": {
             "type": "object",
             "required": [
@@ -129,6 +268,9 @@ const docTemplate = `{
                 "is_disconnected": {
                     "type": "boolean"
                 },
+                "is_host": {
+                    "type": "boolean"
+                },
                 "is_ready": {
                     "type": "boolean"
                 },
@@ -143,6 +285,23 @@ const docTemplate = `{
                 },
                 "room_id": {
                     "type": "string"
+                }
+            }
+        },
+        "player_room_cmd.UpdateRoomPlayerCommand": {
+            "type": "object",
+            "properties": {
+                "disconnected_at": {
+                    "type": "string"
+                },
+                "is_disconnected": {
+                    "type": "boolean"
+                },
+                "is_host": {
+                    "type": "boolean"
+                },
+                "is_ready": {
+                    "type": "boolean"
                 }
             }
         }

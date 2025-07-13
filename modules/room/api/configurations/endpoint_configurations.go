@@ -11,5 +11,6 @@ import (
 
 func ConfigEndpoints(log logger.ILogger, echo *echo.Echo, ctx context.Context, validator *validator.Validate) error {
 	controller.RoomRoute(echo, ctx, log, validator)
+	controller.RoomPlayerRoute(echo, ctx, log, validator)
 	return nil
 }

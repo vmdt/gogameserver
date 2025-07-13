@@ -20,16 +20,10 @@ func ConfigMigrations(dbContext *infrastructure.RoomDbContext, log logger.ILogge
 		log.Infof("Table already exists")
 	}
 
-	hasTable = db.Migrator().HasTable(&domain.RoomPlayer{})
-
-	if !hasTable {
-		if err := db.Migrator().CreateTable(&domain.RoomPlayer{}); err != nil {
-			log.Errorf("Failed to create table: %v", err)
-			return err
-		}
-		log.Infof("Table created successfully")
-	} else {
-		log.Infof("Table already exists")
+	db = dbContext.GetModelDB(&domain.RoomPlayer{})
+	if err := db.AutoMigrate(&domain.RoomPlayer{}); err != nil {
+		log.Error("Failed to run migrations for RoomPlayer model: %v", err)
+		return err
 	}
 
 	return nil

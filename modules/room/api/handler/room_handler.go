@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"errors"
 
 	"github.com/go-playground/validator"
 	"github.com/labstack/echo/v4"
@@ -34,11 +35,12 @@ func GetRoomHandler() echo.HandlerFunc {
 		roomID := c.Param("id")
 		q := query.NewGetRoomQuery(roomID)
 
-		result, err := mediatr.Send[*query.GetRoomQuery, *dtos.RoomDTO](c.Request().Context(), q)
+		result, err := mediatr.Send[*query.GetRoomQuery, *dtos.RoomInformationDTO](c.Request().Context(), q)
 
 		if err != nil {
-			return c.JSON(500, map[string]string{"error": err.Error()})
+			return c.JSON(400, map[string]string{"error": errors.Unwrap(err).Error()})
 		}
+
 		return c.JSON(200, result)
 	}
 }
@@ -80,7 +82,7 @@ func PlayerCreateRoomHandler(validator *validator.Validate, ctx context.Context)
 // @Tags         Room.Player
 // @Accept       json
 // @Produce      json
-// @Param        request  body      commands.JoinRoomCommand  true  "Player Join Room
+// @Param        request  body      commands.JoinRoomCommand  true  "Player Join Room"
 // @Success      200      {object}  dtos.RoomPlayerDTO
 // @Failure      400      {object}  map[string]string
 // @Failure      500      {object}  map[string]string
