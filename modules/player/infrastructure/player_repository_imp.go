@@ -30,3 +30,10 @@ func (p *PlayerRepositoryImp) GetPlayerByID(ctx context.Context, id string) (*do
 	}
 	return &player, nil
 }
+
+func (p *PlayerRepositoryImp) DeletePlayer(ctx context.Context, playerId string) (bool, error) {
+	if err := p.playerDbContext.GetModelDB().Where("id = ?", playerId).Delete(&domain.Player{}).Error; err != nil {
+		return false, err
+	}
+	return true, nil
+}

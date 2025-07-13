@@ -15,6 +15,11 @@ func ConfigPlayerMediator(log logger.ILogger, ctx context.Context, playerRepo do
 		return err
 	}
 
+	err = mediatr.RegisterRequestHandler(commands.NewDeletePlayerCommandHandler(log, ctx, playerRepo))
+	if err != nil {
+		return err
+	}
+
 	log.Info("Player mediator configurations completed successfully")
 	return nil
 }

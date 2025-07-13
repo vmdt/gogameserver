@@ -41,6 +41,11 @@ func ConfigRoomMediator(
 		return err
 	}
 
+	err = mediatr.RegisterRequestHandler(player_room_cmd.NewKickPlayerRoomCommandHandler(log, ctx, db))
+	if err != nil {
+		return err
+	}
+
 	// Register internal command handler for creating room players
 	err = mediatr.RegisterRequestHandler(player_room_cmd.NewInternalCreateRoomPlayerCommandHandler(log, ctx, db))
 	if err != nil {
