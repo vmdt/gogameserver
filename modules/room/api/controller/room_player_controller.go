@@ -12,4 +12,5 @@ import (
 func RoomPlayerRoute(echo *echo.Echo, ctx context.Context, log logger.ILogger, validator *validator.Validate) {
 	group := echo.Group("/api/v1/room")
 	group.PUT("/:room_id/players/:player_id", handler.UpdateRoomPlayerHandler(validator, ctx))
+	group.DELETE("/:room_id/players/:player_id", handler.KickPlayerRoomHandler(validator, ctx))
 }

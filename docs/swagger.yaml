@@ -80,6 +80,43 @@ info:
   contact: {}
 paths:
   /api/v1/room/{room_id}/players/{player_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Removes a player from the specified room.
+      parameters:
+      - description: Room ID (UUID)
+        in: path
+        name: room_id
+        required: true
+        type: string
+      - description: Player ID (UUID)
+        in: path
+        name: player_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            type: boolean
+        "400":
+          description: bad request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Kick a player from a room
+      tags:
+      - Room.Players
     put:
       consumes:
       - application/json
