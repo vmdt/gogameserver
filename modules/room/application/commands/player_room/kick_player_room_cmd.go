@@ -5,6 +5,7 @@ import (
 
 	"github.com/mehdihadeli/go-mediatr"
 	player_commands "github.com/vmdt/gogameserver/modules/player/application/commands"
+	"github.com/vmdt/gogameserver/modules/room/application/events"
 	"github.com/vmdt/gogameserver/modules/room/infrastructure"
 	"github.com/vmdt/gogameserver/pkg/logger"
 )
@@ -41,5 +42,12 @@ func (h *KickPlayerRoomCommandHandler) Handle(ctx context.Context, command *Kick
 		h.log.Error("Failed to kick player from room", "error", err)
 		return false, err
 	}
+
+	kickEvent := events.NewKickPlayerRoomEvent(command.RoomId, command.PlayerId)
+	if err := mediatr.Publish[*events.KickPlayerRoomEvent](ctx, kickEvent); err != nil {
+		h.log.Error("Failed to publish kick player room event", "error", err)
+		return false, err
+	}
+
 	return result, nil
 }
