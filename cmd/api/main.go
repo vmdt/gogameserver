@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/go-playground/validator"
 	"github.com/vmdt/gogameserver/config"
+	boardgame_api "github.com/vmdt/gogameserver/modules/boardgame/api"
 	player_api "github.com/vmdt/gogameserver/modules/player/api"
 	room_api "github.com/vmdt/gogameserver/modules/room/api"
 	echoserver "github.com/vmdt/gogameserver/pkg/echo"
@@ -29,6 +30,7 @@ func main() {
 			),
 			player_api.Startup(),
 			room_api.Startup(),
+			boardgame_api.Startup(),
 			fx.Invoke(server.RunAPIServer),
 			fx.Invoke(configurations.ConfigSwagger),
 			fx.Invoke(configurations.ConfigMiddleware),
