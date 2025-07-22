@@ -22,6 +22,50 @@ definitions:
     required:
     - name
     type: object
+  domain.Position:
+    properties:
+      x:
+        type: integer
+      "y":
+        type: integer
+    type: object
+  domain.Ship:
+    properties:
+      name:
+        type: string
+      orientation:
+        description: '"horizontal" or "vertical"'
+        type: string
+      positions:
+        items:
+          $ref: '#/definitions/domain.Position'
+        type: array
+      size:
+        type: integer
+    type: object
+  domain.Shot:
+    properties:
+      position:
+        $ref: '#/definitions/domain.Position'
+      status:
+        description: e.g., "hit", "miss"
+        type: string
+    type: object
+  dtos.BattleshipGame:
+    properties:
+      player_id:
+        type: string
+      room_id:
+        type: string
+      ships:
+        items:
+          $ref: '#/definitions/domain.Ship'
+        type: array
+      shots:
+        items:
+          $ref: '#/definitions/domain.Shot'
+        type: array
+    type: object
   dtos.PlayerDTO:
     properties:
       created_at:
@@ -79,6 +123,37 @@ definitions:
 info:
   contact: {}
 paths:
+  /api/v1/boardgame/battleship:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new Battleship game board with the provided player, room,
+        ships, and shots information.
+      parameters:
+      - description: Battleship Game Data
+        in: body
+        name: BattleshipGame
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.BattleshipGame'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.BattleshipGame'
+        "400":
+          description: Invalid request or Validation error
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: Create Battleship Board
+      tags:
+      - Board.Battleship
   /api/v1/room/{room_id}/players/{player_id}:
     delete:
       consumes:

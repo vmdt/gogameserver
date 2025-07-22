@@ -63,6 +63,11 @@ func ConfigRoomMediator(
 		return err
 	}
 
+	err = mediatr.RegisterNotificationHandler(events.NewKickPlayerRoomEventHandler(log, ctx, redisClient))
+	if err != nil {
+		return err
+	}
+
 	log.Info("Room mediator configurations completed successfully")
 	return nil
 }

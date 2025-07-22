@@ -4,6 +4,52 @@
         "contact": {}
     },
     "paths": {
+        "/api/v1/boardgame/battleship": {
+            "post": {
+                "description": "Creates a new Battleship game board with the provided player, room, ships, and shots information.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Board.Battleship"
+                ],
+                "summary": "Create Battleship Board",
+                "parameters": [
+                    {
+                        "description": "Battleship Game Data",
+                        "name": "BattleshipGame",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dtos.BattleshipGame"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dtos.BattleshipGame"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request or Validation error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/room/player/create": {
             "post": {
                 "description": "Allows a player to create a new room with a name and user ID",
@@ -263,6 +309,73 @@
                 },
                 "user_id": {
                     "type": "string"
+                }
+            }
+        },
+        "domain.Position": {
+            "type": "object",
+            "properties": {
+                "x": {
+                    "type": "integer"
+                },
+                "y": {
+                    "type": "integer"
+                }
+            }
+        },
+        "domain.Ship": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "orientation": {
+                    "description": "\"horizontal\" or \"vertical\"",
+                    "type": "string"
+                },
+                "positions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.Position"
+                    }
+                },
+                "size": {
+                    "type": "integer"
+                }
+            }
+        },
+        "domain.Shot": {
+            "type": "object",
+            "properties": {
+                "position": {
+                    "$ref": "#/definitions/domain.Position"
+                },
+                "status": {
+                    "description": "e.g., \"hit\", \"miss\"",
+                    "type": "string"
+                }
+            }
+        },
+        "dtos.BattleshipGame": {
+            "type": "object",
+            "properties": {
+                "player_id": {
+                    "type": "string"
+                },
+                "room_id": {
+                    "type": "string"
+                },
+                "ships": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.Ship"
+                    }
+                },
+                "shots": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.Shot"
+                    }
                 }
             }
         },
