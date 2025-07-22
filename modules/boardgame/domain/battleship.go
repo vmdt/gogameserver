@@ -1,12 +1,15 @@
 package domain
 
-import "github.com/google/uuid"
+import (
+	"github.com/google/uuid"
+	"gorm.io/datatypes"
+)
 
 type BattleShip struct {
-	RoomId   uuid.UUID `gorm:"type:uuid;primaryKey" json:"room_id"`
-	PlayerId uuid.UUID `gorm:"type:uuid;primaryKey" json:"player_id"`
-	Ships    []Ship    `gorm:"type:jsonb" json:"ships"`
-	Shots    []Shot    `gorm:"type:jsonb" json:"shots"`
+	RoomId   uuid.UUID      `gorm:"type:uuid;primaryKey" json:"room_id"`
+	PlayerId uuid.UUID      `gorm:"type:uuid;primaryKey" json:"player_id"`
+	Ships    datatypes.JSON `gorm:"type:jsonb" json:"ships"`
+	Shots    datatypes.JSON `gorm:"type:jsonb" json:"shots"`
 }
 
 func (b *BattleShip) TableName() string {

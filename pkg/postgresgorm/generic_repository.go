@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 // gorm generic repository
@@ -20,6 +21,12 @@ func NewGenericRepository[T any](db *gorm.DB) *GenericRepository[T] {
 
 func (r *GenericRepository[T]) Add(entity *T, ctx context.Context) error {
 	return r.db.WithContext(ctx).Create(&entity).Error
+}
+
+func (r *GenericRepository[T]) AddOrUpdate(entity *T, ctx context.Context) error {
+	return r.db.WithContext(ctx).Clauses(clause.OnConflict{
+		UpdateAll: true,
+	}).Create(&entity).Error
 }
 
 func (r *GenericRepository[T]) AddAll(entity *[]T, ctx context.Context) error {

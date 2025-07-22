@@ -36,3 +36,10 @@ func (repo *BattleShipRepositoryImp) GetBoardGameByPlayerId(playerId string, roo
 	}
 	return repo.generic.Get(&params, repo.ctx), nil
 }
+
+func (repo *BattleShipRepositoryImp) AddOrUpdate(battleShip *domain.BattleShip) (*domain.BattleShip, error) {
+	if err := repo.generic.AddOrUpdate(battleShip, repo.ctx); err != nil {
+		return nil, err
+	}
+	return battleShip, nil
+}

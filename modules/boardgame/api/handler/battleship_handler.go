@@ -50,7 +50,7 @@ func CreateBattleShipBoardHandler(
 		result, err := mediatr.Send[*commands.CreateBattleShipBoardCommand, *dtos.BattleshipGame](ctx, cmd)
 		if err != nil {
 			log.Error("Failed to create battleship board", "error", err)
-			return c.JSON(http.StatusInternalServerError, "Internal server error")
+			return c.JSON(http.StatusInternalServerError, err.Error())
 		}
 
 		return c.JSON(http.StatusOK, result)

@@ -2,6 +2,7 @@ package commands
 
 import (
 	"context"
+	"encoding/json"
 
 	"github.com/google/uuid"
 	"github.com/vmdt/gogameserver/modules/boardgame/application/dtos"
@@ -42,20 +43,36 @@ func NewCreateBattleShipBoardCommandHandler(log logger.ILogger, ctx context.Cont
 }
 
 func (h *CreateBattleShipBoardCommandHandler) Handle(ctx context.Context, command *CreateBattleShipBoardCommand) (*dtos.BattleshipGame, error) {
+	shipsJson, err := json.Marshal(command.Ships)
+	if err != nil {
+		h.log.Error("Failed to marshal ships", "error", err)
+		return nil, err
+	}
+	shotsJson, err := json.Marshal(command.Shots)
+	if err != nil {
+		h.log.Error("Failed to marshal shots", "error", err)
+		return nil, err
+	}
 	battleShip := &domain.BattleShip{
 		PlayerId: uuid.MustParse(command.PlayerId),
 		RoomId:   uuid.MustParse(command.RoomId),
-		Ships:    command.Ships,
-		Shots:    command.Shots,
+		Ships:    shipsJson,
+		Shots:    shotsJson,
 	}
-	createdBoard, err := h.bsRepo.CreateBoard(battleShip)
+	createdBoard, err := h.bsRepo.AddOrUpdate(battleShip)
 	if err != nil {
 		return nil, err
 	}
+
+	var ships []domain.Ship
+	var shots []domain.Shot
+	_ = json.Unmarshal(createdBoard.Ships, &ships)
+	_ = json.Unmarshal(createdBoard.Shots, &shots)
+
 	return &dtos.BattleshipGame{
 		PlayerId: createdBoard.PlayerId.String(),
 		RoomId:   createdBoard.RoomId.String(),
-		Ships:    createdBoard.Ships,
-		Shots:    createdBoard.Shots,
+		Ships:    ships,
+		Shots:    shots,
 	}, nil
 }
