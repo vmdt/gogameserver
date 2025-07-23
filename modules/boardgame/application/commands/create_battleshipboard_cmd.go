@@ -5,7 +5,9 @@ import (
 	"encoding/json"
 
 	"github.com/google/uuid"
+	"github.com/mehdihadeli/go-mediatr"
 	"github.com/vmdt/gogameserver/modules/boardgame/application/dtos"
+	"github.com/vmdt/gogameserver/modules/boardgame/application/events"
 	"github.com/vmdt/gogameserver/modules/boardgame/domain"
 	"github.com/vmdt/gogameserver/pkg/logger"
 )
@@ -61,6 +63,24 @@ func (h *CreateBattleShipBoardCommandHandler) Handle(ctx context.Context, comman
 	}
 	createdBoard, err := h.bsRepo.AddOrUpdate(battleShip)
 	if err != nil {
+		return nil, err
+	}
+
+	bsBoardReadyEvent := events.NewReadyBattleShipBoardEvent(
+		command.PlayerId,
+		command.RoomId,
+	)
+	if err := mediatr.Publish(ctx, bsBoardReadyEvent); err != nil {
+		h.log.Error("Failed to publish ReadyBattleShipBoardEvent", "error", err)
+		return nil, err
+	}
+
+	updatePlayerStatusEvent := events.NewUpdatePlayerStatusEvent(
+		command.PlayerId,
+		command.RoomId,
+	)
+	if err := mediatr.Publish(ctx, updatePlayerStatusEvent); err != nil {
+		h.log.Error("Failed to publish UpdatePlayerStatusEvent", "error", err)
 		return nil, err
 	}
 

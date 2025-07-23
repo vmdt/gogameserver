@@ -5,6 +5,7 @@ import (
 
 	"github.com/mehdihadeli/go-mediatr"
 	"github.com/redis/go-redis/v9"
+	boardgame_events "github.com/vmdt/gogameserver/modules/boardgame/application/events"
 	"github.com/vmdt/gogameserver/modules/room/application/commands"
 	player_room_cmd "github.com/vmdt/gogameserver/modules/room/application/commands/player_room"
 	"github.com/vmdt/gogameserver/modules/room/application/events"
@@ -64,6 +65,16 @@ func ConfigRoomMediator(
 	}
 
 	err = mediatr.RegisterNotificationHandler(events.NewKickPlayerRoomEventHandler(log, ctx, redisClient))
+	if err != nil {
+		return err
+	}
+
+	err = mediatr.RegisterNotificationHandler(events.NewRoomReadyHandler[*boardgame_events.ReadyBattleShipBoardEvent](log, ctx, redisClient, db))
+	if err != nil {
+		return err
+	}
+
+	err = mediatr.RegisterNotificationHandler(events.NewUpdateRoomPlayerStatusHandler[*boardgame_events.UpdatePlayerStatusEvent](log, ctx, redisClient, db))
 	if err != nil {
 		return err
 	}
