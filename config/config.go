@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"runtime"
 
+	"github.com/joho/godotenv"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 	echoserver "github.com/vmdt/gogameserver/pkg/echo"
@@ -33,6 +34,16 @@ func InitConfig() (
 	*redis2.RedisOptions,
 	error,
 ) {
+	dir, err := dirname()
+	if err != nil {
+		return nil, nil, nil, nil, nil, errors.Wrap(err, "dirname")
+	}
+
+	envPath := filepath.Join(dir, "../.env")
+	err = godotenv.Load(envPath)
+	if err != nil {
+		return nil, nil, nil, nil, nil, errors.Wrap(err, "godotenv.Load")
+	}
 	env := os.Getenv("APP_ENV")
 	if env == "" {
 		env = "development"

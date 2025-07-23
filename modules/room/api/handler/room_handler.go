@@ -108,3 +108,35 @@ func PlayerJoinRoomHandler(validator *validator.Validate, ctx context.Context) e
 		return c.JSON(200, result)
 	}
 }
+
+// @Summary      Update room status
+// @Description  Allows updating the status of a room by its ID
+// @Tags         Room
+// @Accept       json
+// @Produce      json
+// @Param        request  body      commands.UpdateRoomStatusCommand  true  "Update Room Status Request"
+// @Success      200      {object}  dtos.RoomDTO
+// @Failure      400      {object}  map[string]string
+// @Failure      500      {object}  map[string]string
+// @Router       /api/v1/room/status [put]
+func UpdateRoomStatusHandler(validator *validator.Validate, ctx context.Context) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		request := &commands.UpdateRoomStatusCommand{}
+		if err := c.Bind(request); err != nil {
+			return c.JSON(400, map[string]string{"error": "Invalid request body"})
+		}
+
+		if err := validator.StructCtx(ctx, request); err != nil {
+			return c.JSON(400, map[string]string{"error": err.Error()})
+		}
+
+		cmd := commands.NewUpdateRoomStatusCommand(request.RoomId, request.Status)
+
+		result, err := mediatr.Send[*commands.UpdateRoomStatusCommand, *dtos.RoomDTO](ctx, cmd)
+
+		if err != nil {
+			return c.JSON(500, map[string]string{"error": err.Error()})
+		}
+		return c.JSON(200, result)
+	}
+}

@@ -15,7 +15,9 @@ func BattleshipRoute(
 	log logger.ILogger,
 	validator *validator.Validate,
 ) error {
-	group := echo.Group("/api/v1/boardgame")
-	group.POST("/battleship", handler.CreateBattleShipBoardHandler(validator, log, ctx))
+	group := echo.Group("/api/v1/boardgame/battleship")
+
+	group.GET("/room/:room_id/player/:player_id", handler.GetBattleShipBoardHandler(validator, log, ctx))
+	group.POST("/", handler.CreateBattleShipBoardHandler(validator, log, ctx))
 	return nil
 }

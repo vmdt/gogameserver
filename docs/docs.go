@@ -61,6 +61,57 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/boardgame/battleship/room/{room_id}/player/{player_id}": {
+            "get": {
+                "description": "Retrieves the Battleship game board for a specific player and room.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Board.Battleship"
+                ],
+                "summary": "Get Battleship Board",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Player ID",
+                        "name": "player_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Room ID",
+                        "name": "room_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dtos.BattleshipGame"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request or Validation error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/room/player/create": {
             "post": {
                 "description": "Allows a player to create a new room with a name and user ID",
@@ -142,6 +193,58 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/dtos.RoomPlayerDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/room/status": {
+            "put": {
+                "description": "Allows updating the status of a room by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Room"
+                ],
+                "summary": "Update room status",
+                "parameters": [
+                    {
+                        "description": "Update Room Status Request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/commands.UpdateRoomStatusCommand"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dtos.RoomDTO"
                         }
                     },
                     "400": {
@@ -319,6 +422,21 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "commands.UpdateRoomStatusCommand": {
+            "type": "object",
+            "required": [
+                "room_id",
+                "status"
+            ],
+            "properties": {
+                "room_id": {
+                    "type": "string"
+                },
+                "status": {
                     "type": "string"
                 }
             }
