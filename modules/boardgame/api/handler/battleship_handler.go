@@ -9,6 +9,7 @@ import (
 	"github.com/mehdihadeli/go-mediatr"
 	"github.com/vmdt/gogameserver/modules/boardgame/application/commands"
 	"github.com/vmdt/gogameserver/modules/boardgame/application/dtos"
+	"github.com/vmdt/gogameserver/modules/boardgame/application/queries"
 	"github.com/vmdt/gogameserver/pkg/logger"
 )
 
@@ -50,6 +51,49 @@ func CreateBattleShipBoardHandler(
 		result, err := mediatr.Send[*commands.CreateBattleShipBoardCommand, *dtos.BattleshipGame](ctx, cmd)
 		if err != nil {
 			log.Error("Failed to create battleship board", "error", err)
+			return c.JSON(http.StatusInternalServerError, err.Error())
+		}
+
+		return c.JSON(http.StatusOK, result)
+	}
+}
+
+// GetBattleShipBoardHandler handles the retrieval of a Battleship game board.
+// @Summary      Get Battleship Board
+// @Description  Retrieves the Battleship game board for a specific player and room.
+// @Tags         Board.Battleship
+// @Accept       json
+// @Produce      json
+// @Param        player_id  path      string  true  "Player ID"
+// @Param        room_id    path      string  true  "Room ID"
+// @Success      200  {object}   dtos.BattleshipGame
+// @Failure      400  {string}   string  "Invalid request or Validation error
+// @Failure      500  {string}   string  "Internal server error"
+// @Router       /api/v1/boardgame/battleship/room/{room_id}/player/{player_id} [get]
+func GetBattleShipBoardHandler(
+	validator *validator.Validate,
+	log logger.ILogger,
+	ctx context.Context,
+) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var query queries.GetBattleshipBoardQuery
+		if err := c.Bind(&query); err != nil {
+			log.Error("Failed to bind request", "error", err)
+			return c.JSON(http.StatusBadRequest, "Invalid request")
+		}
+
+		if err := validator.Struct(query); err != nil {
+			log.Error("Validation failed", "error", err)
+			return c.JSON(http.StatusBadRequest, err.Error())
+		}
+
+		cmd := queries.NewGetBattleshipBoardQuery(
+			query.PlayerId,
+			query.RoomId,
+		)
+		result, err := mediatr.Send[*queries.GetBattleshipBoardQuery, *dtos.BattleshipGame](ctx, cmd)
+		if err != nil {
+			log.Error("Failed to get battleship board", "error", err)
 			return c.JSON(http.StatusInternalServerError, err.Error())
 		}
 
