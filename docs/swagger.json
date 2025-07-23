@@ -154,6 +154,58 @@
                 }
             }
         },
+        "/api/v1/room/status": {
+            "put": {
+                "description": "Allows updating the status of a room by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Room"
+                ],
+                "summary": "Update room status",
+                "parameters": [
+                    {
+                        "description": "Update Room Status Request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/commands.UpdateRoomStatusCommand"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dtos.RoomDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/room/{room_id}/players/{player_id}": {
             "put": {
                 "description": "Partially updates the information of a player in a room.",
@@ -308,6 +360,21 @@
                     "type": "string"
                 },
                 "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "commands.UpdateRoomStatusCommand": {
+            "type": "object",
+            "required": [
+                "room_id",
+                "status"
+            ],
+            "properties": {
+                "room_id": {
+                    "type": "string"
+                },
+                "status": {
                     "type": "string"
                 }
             }

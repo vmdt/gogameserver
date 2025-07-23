@@ -22,6 +22,16 @@ definitions:
     required:
     - name
     type: object
+  commands.UpdateRoomStatusCommand:
+    properties:
+      room_id:
+        type: string
+      status:
+        type: string
+    required:
+    - room_id
+    - status
+    type: object
   domain.Position:
     properties:
       x:
@@ -303,4 +313,38 @@ paths:
       summary: Player joins a room
       tags:
       - Room.Player
+  /api/v1/room/status:
+    put:
+      consumes:
+      - application/json
+      description: Allows updating the status of a room by its ID
+      parameters:
+      - description: Update Room Status Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/commands.UpdateRoomStatusCommand'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.RoomDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update room status
+      tags:
+      - Room
 swagger: "2.0"

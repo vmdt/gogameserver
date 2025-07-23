@@ -30,3 +30,10 @@ func (r *RoomRepositoryImp) GetRoomByID(ctx context.Context, id string) (*domain
 	}
 	return &room, nil
 }
+
+func (r *RoomRepositoryImp) UpdateRoom(ctx context.Context, room *domain.Room) (*domain.Room, error) {
+	if err := r.db.GetModelDB(&domain.Room{}).Where("id = ?", room.ID).Updates(room).Error; err != nil {
+		return nil, err
+	}
+	return room, nil
+}
