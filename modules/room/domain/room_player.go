@@ -10,16 +10,25 @@ import (
 )
 
 type RoomPlayer struct {
-	RoomId         uuid.UUID  `gorm:"type:uuid;primaryKey" json:"room_id"`
-	PlayerId       uuid.UUID  `gorm:"type:uuid;primaryKey" json:"player_id"`
-	IsReady        bool       `gorm:"default:false" json:"is_ready"`
-	IsDisconnected bool       `gorm:"default:false" json:"is_disconnected"`
-	DisconnectedAt *time.Time `gorm:"default:null" json:"disconnected_at,omitempty"`
-	IsHost         bool       `gorm:"default:false" json:"is_host"`
+	RoomId         uuid.UUID        `gorm:"type:uuid;primaryKey" json:"room_id"`
+	PlayerId       uuid.UUID        `gorm:"type:uuid;primaryKey" json:"player_id"`
+	IsReady        bool             `gorm:"default:false" json:"is_ready"`
+	IsDisconnected bool             `gorm:"default:false" json:"is_disconnected"`
+	DisconnectedAt *time.Time       `gorm:"default:null" json:"disconnected_at,omitempty"`
+	IsHost         bool             `gorm:"default:false" json:"is_host"`
+	Status         RoomPlayerStatus `gorm:"default:0" json:"status"`
 
 	Room   *Room          `gorm:"foreignKey:RoomId;references:ID;constraint:OnDelete:CASCADE,OnUpdate:CASCADE" json:"room,omitempty"`
 	Player *domain.Player `gorm:"foreignKey:PlayerId;references:ID;constraint:OnDelete:CASCADE,OnUpdate:CASCADE" json:"player,omitempty"`
 }
+
+type RoomPlayerStatus int
+
+const (
+	InLobby       RoomPlayerStatus = iota // 0
+	Placing                               // 1
+	ReadyToBattle                         // 2
+)
 
 func (rp *RoomPlayer) ToDTO() *dtos.RoomPlayerDTO {
 	var roomDTO *dtos.RoomDTO
