@@ -61,6 +61,52 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/boardgame/battleship/attack": {
+            "put": {
+                "description": "Attacks a position on the Battleship game board for a specific player and",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Board.Battleship"
+                ],
+                "summary": "Attack Battleship Board",
+                "parameters": [
+                    {
+                        "description": "Attack Battleship Command Data",
+                        "name": "AttackBattleShipCommand",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/commands.AttackBattleShipCommand"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request or Validation error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/boardgame/battleship/room/{room_id}/player/{player_id}": {
             "get": {
                 "description": "Retrieves the Battleship game board for a specific player and room.",
@@ -391,6 +437,20 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "commands.AttackBattleShipCommand": {
+            "type": "object",
+            "properties": {
+                "player_id": {
+                    "type": "string"
+                },
+                "position": {
+                    "$ref": "#/definitions/domain.Position"
+                },
+                "room_id": {
+                    "type": "string"
+                }
+            }
+        },
         "commands.JoinRoomCommand": {
             "type": "object",
             "required": [
@@ -488,6 +548,12 @@ const docTemplate = `{
         "dtos.BattleshipGame": {
             "type": "object",
             "properties": {
+                "opponent_shots": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.Shot"
+                    }
+                },
                 "player_id": {
                     "type": "string"
                 },

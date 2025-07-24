@@ -100,3 +100,44 @@ func GetBattleShipBoardHandler(
 		return c.JSON(http.StatusOK, result)
 	}
 }
+
+// AttackBattleShipHandler handles the attack on a Battleship game board.
+// @Summary      Attack Battleship Board
+// @Description  Attacks a position on the Battleship game board for a specific player and
+// @Tags         Board.Battleship
+// @Accept       json
+// @Produce      json
+// @Param        AttackBattleShipCommand  body      commands.AttackBattleShipCommand  true  "Attack Battleship Command Data"
+// @Success      200  {object}   bool
+// @Failure      400  {string}   string  "Invalid request or Validation error"
+// @Failure      500  {string}   string  "Internal server error"
+// @Router       /api/v1/boardgame/battleship/attack [put]
+func AttackBattleShipHandler(
+	validator *validator.Validate,
+	log logger.ILogger,
+	ctx context.Context,
+) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var request commands.AttackBattleShipCommand
+		if err := c.Bind(&request); err != nil {
+			log.Error("Failed to bind request", "error", err)
+			return c.JSON(http.StatusBadRequest, "Invalid request")
+		}
+		if err := validator.Struct(request); err != nil {
+			log.Error("Validation failed", "error", err)
+			return c.JSON(http.StatusBadRequest, "Validation error")
+		}
+
+		cmd := commands.NewAttackBattleShipCommand(
+			request.PlayerId,
+			request.RoomId,
+			request.Position,
+		)
+		result, err := mediatr.Send[*commands.AttackBattleShipCommand, bool](ctx, cmd)
+		if err != nil {
+			log.Error("Failed to attack battleship", "error", err)
+			return c.JSON(http.StatusInternalServerError, err.Error())
+		}
+		return c.JSON(http.StatusOK, result)
+	}
+}
