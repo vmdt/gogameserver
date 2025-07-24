@@ -25,6 +25,11 @@ func ConfigBattleShipMediator(
 		log.Fatalf("failed to register command handler: %v", err)
 	}
 
+	err = mediatr.RegisterRequestHandler(commands.NewAttackBattleShipCommandHandler(log, ctx, battleshipRepo))
+	if err != nil {
+		log.Fatalf("failed to register command handler: %v", err)
+	}
+
 	// Register queries mediators
 	err = mediatr.RegisterRequestHandler(queries.NewGetBattleshipBoardQueryHandler(log, ctx, battleshipRepo))
 	if err != nil {

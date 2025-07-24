@@ -1,4 +1,13 @@
 definitions:
+  commands.AttackBattleShipCommand:
+    properties:
+      player_id:
+        type: string
+      position:
+        $ref: '#/definitions/domain.Position'
+      room_id:
+        type: string
+    type: object
   commands.JoinRoomCommand:
     properties:
       name:
@@ -63,6 +72,10 @@ definitions:
     type: object
   dtos.BattleshipGame:
     properties:
+      opponent_shots:
+        items:
+          $ref: '#/definitions/domain.Shot'
+        type: array
       player_id:
         type: string
       room_id:
@@ -162,6 +175,37 @@ paths:
           schema:
             type: string
       summary: Create Battleship Board
+      tags:
+      - Board.Battleship
+  /api/v1/boardgame/battleship/attack:
+    put:
+      consumes:
+      - application/json
+      description: Attacks a position on the Battleship game board for a specific
+        player and
+      parameters:
+      - description: Attack Battleship Command Data
+        in: body
+        name: AttackBattleShipCommand
+        required: true
+        schema:
+          $ref: '#/definitions/commands.AttackBattleShipCommand'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: boolean
+        "400":
+          description: Invalid request or Validation error
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: Attack Battleship Board
       tags:
       - Board.Battleship
   /api/v1/boardgame/battleship/room/{room_id}/player/{player_id}:
