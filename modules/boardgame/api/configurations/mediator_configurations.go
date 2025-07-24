@@ -6,6 +6,7 @@ import (
 	"github.com/mehdihadeli/go-mediatr"
 	"github.com/redis/go-redis/v9"
 	"github.com/vmdt/gogameserver/modules/boardgame/application/commands"
+	"github.com/vmdt/gogameserver/modules/boardgame/application/events"
 	"github.com/vmdt/gogameserver/modules/boardgame/application/queries"
 	"github.com/vmdt/gogameserver/modules/boardgame/domain"
 	"github.com/vmdt/gogameserver/modules/boardgame/infrastructure"
@@ -34,5 +35,11 @@ func ConfigBattleShipMediator(
 	err = mediatr.RegisterRequestHandler(queries.NewGetBattleshipBoardQueryHandler(log, ctx, battleshipRepo))
 	if err != nil {
 		log.Fatalf("failed to register query handler: %v", err)
+	}
+
+	// Register events mediators
+	err = mediatr.RegisterNotificationHandler(events.NewAttackBattleShipBoardEventHandler(log, ctx, redisClient))
+	if err != nil {
+		log.Fatalf("failed to register event handler: %v", err)
 	}
 }

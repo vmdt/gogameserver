@@ -6,6 +6,7 @@ import (
 	"errors"
 
 	"github.com/mehdihadeli/go-mediatr"
+	"github.com/vmdt/gogameserver/modules/boardgame/application/events"
 	"github.com/vmdt/gogameserver/modules/boardgame/domain"
 	room_dtos "github.com/vmdt/gogameserver/modules/room/application/dtos"
 	room_query "github.com/vmdt/gogameserver/modules/room/application/query"
@@ -88,6 +89,16 @@ func (h *AttackBattleShipCommandHandler) Handle(ctx context.Context, command *At
 	_, err = h.bsRepo.AddOrUpdate(board)
 	if err != nil {
 		h.log.Error("Failed to update battleship board", "error", err)
+		return false, err
+	}
+
+	// Publish the attack event
+	attackEvent := events.NewAttackBattleShipBoardEvent(command.PlayerId, command.RoomId, domain.Shot{
+		Position: command.Position,
+		Status:   shotStatus,
+	})
+	if err := mediatr.Publish(ctx, attackEvent); err != nil {
+		h.log.Error("Failed to publish attack battleship event", "error", err)
 		return false, err
 	}
 
