@@ -73,7 +73,7 @@ func (h *JoinRoomHandler) Handle(ctx context.Context, command *JoinRoomCommand) 
 		return nil, err
 	}
 
-	roomPlayer, err := mediatr.Send[*player_room_cmd.InternalCreateRoomPlayerCommand, *domain.RoomPlayer](ctx, player_room_cmd.NewInternalCreateRoomPlayerCommand(command.RoomId, player.ID, false))
+	roomPlayer, err := mediatr.Send[*player_room_cmd.InternalCreateRoomPlayerCommand, *domain.RoomPlayer](ctx, player_room_cmd.NewInternalCreateRoomPlayerCommand(command.RoomId, player.ID, false, 2))
 	if err != nil {
 		return nil, err
 	}

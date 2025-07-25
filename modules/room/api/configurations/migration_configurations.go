@@ -8,16 +8,9 @@ import (
 
 func ConfigMigrations(dbContext *infrastructure.RoomDbContext, log logger.ILogger) error {
 	db := dbContext.GetModelDB(&domain.Room{})
-	hasTable := db.Migrator().HasTable(&domain.Room{})
-
-	if !hasTable {
-		if err := db.Migrator().CreateTable(&domain.Room{}); err != nil {
-			log.Errorf("Failed to create table: %v", err)
-			return err
-		}
-		log.Infof("Table created successfully")
-	} else {
-		log.Infof("Table already exists")
+	if err := db.AutoMigrate(&domain.Room{}); err != nil {
+		log.Error("Failed to run migrations for Room model: %v", err)
+		return err
 	}
 
 	db = dbContext.GetModelDB(&domain.RoomPlayer{})
