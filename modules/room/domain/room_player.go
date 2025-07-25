@@ -17,6 +17,7 @@ type RoomPlayer struct {
 	DisconnectedAt *time.Time       `gorm:"default:null" json:"disconnected_at,omitempty"`
 	IsHost         bool             `gorm:"default:false" json:"is_host"`
 	Status         RoomPlayerStatus `gorm:"default:0" json:"status"`
+	Me             int              `gorm:"default:0" json:"me"`
 
 	Room   *Room          `gorm:"foreignKey:RoomId;references:ID;constraint:OnDelete:CASCADE,OnUpdate:CASCADE" json:"room,omitempty"`
 	Player *domain.Player `gorm:"foreignKey:PlayerId;references:ID;constraint:OnDelete:CASCADE,OnUpdate:CASCADE" json:"player,omitempty"`
@@ -46,6 +47,8 @@ func (rp *RoomPlayer) ToDTO() *dtos.RoomPlayerDTO {
 		IsDisconnected: rp.IsDisconnected,
 		DisconnectedAt: rp.DisconnectedAt,
 		IsHost:         rp.IsHost,
+		Status:         int(rp.Status),
+		Me:             rp.Me,
 		RoomId:         rp.RoomId.String(),
 		PlayerId:       rp.PlayerId.String(),
 		Room:           roomDTO,

@@ -13,13 +13,15 @@ type InternalCreateRoomPlayerCommand struct {
 	RoomId   string `json:"room_id"`
 	PlayerId string `json:"player_id"`
 	IsHost   bool   `json:"is_host"`
+	Me       int    `json:"me"`
 }
 
-func NewInternalCreateRoomPlayerCommand(roomId, playerId string, isHost bool) *InternalCreateRoomPlayerCommand {
+func NewInternalCreateRoomPlayerCommand(roomId, playerId string, isHost bool, me int) *InternalCreateRoomPlayerCommand {
 	return &InternalCreateRoomPlayerCommand{
 		RoomId:   roomId,
 		PlayerId: playerId,
 		IsHost:   isHost,
+		Me:       me,
 	}
 }
 
@@ -42,6 +44,7 @@ func (h *InternalCreateRoomPlayerCommandHandler) Handle(ctx context.Context, com
 		RoomId:   uuid.MustParse(command.RoomId),
 		PlayerId: uuid.MustParse(command.PlayerId),
 		IsHost:   command.IsHost,
+		Me:       command.Me,
 	}
 	if err := h.db.GetModelDB(&domain.RoomPlayer{}).Create(roomPlayer).Error; err != nil {
 		h.log.Error("Failed to create room player", "error", err)

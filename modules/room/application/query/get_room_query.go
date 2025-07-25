@@ -45,6 +45,7 @@ func (h *GetRoomHandler) Handle(ctx context.Context, query *GetRoomQuery) (*dtos
 	roomDto := &dtos.RoomDTO{
 		ID:        room.ID.String(),
 		Status:    room.Status,
+		Turn:      room.Turn,
 		CreatedAt: room.CreatedAt,
 		UpdatedAt: room.UpdatedAt,
 	}

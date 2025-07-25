@@ -84,6 +84,11 @@ func ConfigRoomMediator(
 		return err
 	}
 
+	err = mediatr.RegisterNotificationHandler(events.NewAttackBattleShipBoardEventHandler(log, ctx, db, redisClient))
+	if err != nil {
+		return err
+	}
+
 	log.Info("Room mediator configurations completed successfully")
 	return nil
 }
