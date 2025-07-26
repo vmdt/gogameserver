@@ -10,6 +10,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 	echoserver "github.com/vmdt/gogameserver/pkg/echo"
+	elastic "github.com/vmdt/gogameserver/pkg/elasticsearch"
 	"github.com/vmdt/gogameserver/pkg/logger"
 	"github.com/vmdt/gogameserver/pkg/postgresgorm"
 	redis2 "github.com/vmdt/gogameserver/pkg/redis"
@@ -23,6 +24,7 @@ type Config struct {
 	Echo       *echoserver.EchoConfig           `mapstructure:"echo"`
 	PostgresDb *postgresgorm.GormPostgresConfig `mapstructure:"postgresDb"`
 	Redis      *redis2.RedisOptions             `mapstructure:"redis"`
+	Elastic    *elastic.ElasticOptions          `mapstructure:"elastic"`
 }
 
 func InitConfig() (
@@ -32,17 +34,18 @@ func InitConfig() (
 	// *rabbitmq.RabbitMQConfig,
 	*echoserver.EchoConfig,
 	*redis2.RedisOptions,
+	*elastic.ElasticOptions,
 	error,
 ) {
 	dir, err := dirname()
 	if err != nil {
-		return nil, nil, nil, nil, nil, errors.Wrap(err, "dirname")
+		return nil, nil, nil, nil, nil, nil, errors.Wrap(err, "dirname")
 	}
 
 	envPath := filepath.Join(dir, "../.env")
 	err = godotenv.Load(envPath)
 	if err != nil {
-		return nil, nil, nil, nil, nil, errors.Wrap(err, "godotenv.Load")
+		return nil, nil, nil, nil, nil, nil, errors.Wrap(err, "godotenv.Load")
 	}
 	env := os.Getenv("APP_ENV")
 	if env == "" {
@@ -58,7 +61,7 @@ func InitConfig() (
 			//https://stackoverflow.com/questions/18537257/how-to-get-the-directory-of-the-currently-running-file
 			d, err := dirname()
 			if err != nil {
-				return nil, nil, nil, nil, nil, err
+				return nil, nil, nil, nil, nil, nil, err
 			}
 
 			configPath = d
@@ -71,14 +74,14 @@ func InitConfig() (
 	viper.SetConfigType("json")
 
 	if err := viper.ReadInConfig(); err != nil {
-		return nil, nil, nil, nil, nil, errors.Wrap(err, "viper.ReadInConfig")
+		return nil, nil, nil, nil, nil, nil, errors.Wrap(err, "viper.ReadInConfig")
 	}
 
 	if err := viper.Unmarshal(cfg); err != nil {
-		return nil, nil, nil, nil, nil, errors.Wrap(err, "viper.Unmarshal")
+		return nil, nil, nil, nil, nil, nil, errors.Wrap(err, "viper.Unmarshal")
 	}
 
-	return cfg, cfg.Logger, cfg.PostgresDb, cfg.Echo, cfg.Redis, nil
+	return cfg, cfg.Logger, cfg.PostgresDb, cfg.Echo, cfg.Redis, cfg.Elastic, nil
 
 }
 

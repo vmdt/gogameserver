@@ -3,6 +3,7 @@ package logger
 import (
 	"os"
 
+	"github.com/elastic/go-elasticsearch/v8"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -63,7 +64,7 @@ func (l *appLogger) getLevel() log.Level {
 }
 
 // InitLogger Init logger
-func InitLogger(cfg *LoggerConfig) ILogger {
+func InitLogger(cfg *LoggerConfig, elasticClient *elasticsearch.Client) ILogger {
 
 	l := &appLogger{level: cfg.LogLevel}
 
@@ -85,6 +86,14 @@ func InitLogger(cfg *LoggerConfig) ILogger {
 	}
 
 	log.SetLevel(logLevel)
+	if elasticClient != nil {
+		indexName := os.Getenv("SERVICE_NAME")
+		if indexName == "" {
+			indexName = "gogameserver"
+		}
+		hook := NewElasticHook(elasticClient, indexName)
+		log.AddHook(hook)
+	}
 
 	return l
 }
