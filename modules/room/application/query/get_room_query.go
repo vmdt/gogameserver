@@ -59,6 +59,8 @@ func (h *GetRoomHandler) Handle(ctx context.Context, query *GetRoomQuery) (*dtos
 		roomPlayerDtos = append(roomPlayerDtos, rp.ToDTO())
 	}
 
+	h.log.Info("GetRoomQuery: Room fetched successfully", "room_id ", room.ID, "players_count ", len(roomPlayerDtos))
+
 	return &dtos.RoomInformationDTO{
 		Room:    *roomDto,
 		Players: roomPlayerDtos,

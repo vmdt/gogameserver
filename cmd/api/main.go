@@ -7,6 +7,7 @@ import (
 	player_api "github.com/vmdt/gogameserver/modules/player/api"
 	room_api "github.com/vmdt/gogameserver/modules/room/api"
 	echoserver "github.com/vmdt/gogameserver/pkg/echo"
+	elastic "github.com/vmdt/gogameserver/pkg/elasticsearch"
 	"github.com/vmdt/gogameserver/pkg/http"
 	"github.com/vmdt/gogameserver/pkg/logger"
 	"github.com/vmdt/gogameserver/pkg/postgresgorm"
@@ -27,6 +28,7 @@ func main() {
 				postgresgorm.NewGorm,
 				validator.New,
 				redis2.NewRedisClient,
+				elastic.NewElasticClient,
 			),
 			player_api.Startup(),
 			room_api.Startup(),
