@@ -21,6 +21,12 @@ type (
 )
 
 func NewJwtService() IJwtService {
+	// load env variables
+	secret := system.Getenv("AUTH_JWT_SECRET")
+	if secret == "" {
+		panic("Please setup SecretKey")
+	}
+
 	return &jwtService{}
 }
 

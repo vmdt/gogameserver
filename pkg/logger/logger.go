@@ -1,9 +1,12 @@
 package logger
 
 import (
+	"fmt"
 	"os"
+	"runtime/debug"
 
 	"github.com/elastic/go-elasticsearch/v8"
+	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -98,6 +101,20 @@ func InitLogger(cfg *LoggerConfig, elasticClient *elasticsearch.Client) ILogger 
 	return l
 }
 
+func getStackFromArgs(args ...interface{}) string {
+	for _, arg := range args {
+		if err, ok := arg.(error); ok {
+			type stackTracer interface {
+				StackTrace() errors.StackTrace
+			}
+			if errWithStack, ok := err.(stackTracer); ok {
+				return fmt.Sprintf("%+v", errWithStack.StackTrace())
+			}
+		}
+	}
+	return string(debug.Stack()) // fallback nếu không có stack từ error
+}
+
 func (l *appLogger) Debug(args ...interface{}) {
 	l.logger.Debug(args...)
 }
@@ -123,7 +140,8 @@ func (l *appLogger) Tracef(format string, args ...interface{}) {
 }
 
 func (l *appLogger) Error(args ...interface{}) {
-	l.logger.Error(args...)
+	stack := getStackFromArgs(args...)
+	l.logger.WithField("stack", stack).Error(args...)
 }
 
 func (l *appLogger) Errorf(format string, args ...interface{}) {
