@@ -1,0 +1,3 @@
+package configurations
+
+func ConfigEndpoints() {}

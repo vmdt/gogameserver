@@ -4,6 +4,7 @@ import (
 	"github.com/go-playground/validator"
 	"github.com/vmdt/gogameserver/config"
 	boardgame_api "github.com/vmdt/gogameserver/modules/boardgame/api"
+	identity_api "github.com/vmdt/gogameserver/modules/identity/api"
 	player_api "github.com/vmdt/gogameserver/modules/player/api"
 	room_api "github.com/vmdt/gogameserver/modules/room/api"
 	echoserver "github.com/vmdt/gogameserver/pkg/echo"
@@ -15,6 +16,8 @@ import (
 	"github.com/vmdt/gogameserver/server"
 	"github.com/vmdt/gogameserver/server/configurations"
 	"go.uber.org/fx"
+
+	_ "github.com/vmdt/gogameserver/pkg/system" // load system env
 )
 
 func main() {
@@ -33,6 +36,7 @@ func main() {
 			player_api.Startup(),
 			room_api.Startup(),
 			boardgame_api.Startup(),
+			identity_api.Startup(),
 			fx.Invoke(server.RunAPIServer),
 			fx.Invoke(configurations.ConfigSwagger),
 			fx.Invoke(configurations.ConfigMiddleware),
