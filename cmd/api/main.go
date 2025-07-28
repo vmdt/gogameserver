@@ -15,6 +15,8 @@ import (
 	"github.com/vmdt/gogameserver/server"
 	"github.com/vmdt/gogameserver/server/configurations"
 	"go.uber.org/fx"
+
+	_ "github.com/vmdt/gogameserver/pkg/system" // load system env
 )
 
 func main() {
