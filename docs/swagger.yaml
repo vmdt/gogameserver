@@ -22,6 +22,18 @@ definitions:
     - name
     - room_id
     type: object
+  commands.LoginCommand:
+    properties:
+      email:
+        type: string
+      password:
+        maxLength: 100
+        minLength: 6
+        type: string
+    required:
+    - email
+    - password
+    type: object
   commands.PlayerCreateRoomCommand:
     properties:
       name:
@@ -30,6 +42,17 @@ definitions:
         type: string
     required:
     - name
+    type: object
+  commands.RegisterUserCommand:
+    properties:
+      email:
+        type: string
+      nation:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
     type: object
   commands.UpdateRoomStatusCommand:
     properties:
@@ -110,6 +133,8 @@ definitions:
         type: string
       status:
         type: string
+      turn:
+        type: integer
       updated_at:
         type: string
     type: object
@@ -123,6 +148,8 @@ definitions:
         type: boolean
       is_ready:
         type: boolean
+      me:
+        type: integer
       player:
         $ref: '#/definitions/dtos.PlayerDTO'
       player_id:
@@ -130,6 +157,39 @@ definitions:
       room:
         $ref: '#/definitions/dtos.RoomDTO'
       room_id:
+        type: string
+      status:
+        type: integer
+    type: object
+  dtos.TokenPairDTO:
+    properties:
+      access_token:
+        type: string
+      expires_in:
+        type: integer
+      refresh_token:
+        type: string
+    type: object
+  dtos.UserAuthDTO:
+    properties:
+      tokens:
+        $ref: '#/definitions/dtos.TokenPairDTO'
+      user:
+        $ref: '#/definitions/dtos.UserDTO'
+    type: object
+  dtos.UserDTO:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      nation:
+        type: string
+      updated_at:
+        type: string
+      username:
         type: string
     type: object
   player_room_cmd.UpdateRoomPlayerCommand:
@@ -242,6 +302,74 @@ paths:
       summary: Get Battleship Board
       tags:
       - Board.Battleship
+  /api/v1/identity/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticates a user and returns the authentication token.
+      parameters:
+      - description: User login details
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/commands.LoginCommand'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.UserAuthDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: User login
+      tags:
+      - Identity
+  /api/v1/identity/register:
+    post:
+      consumes:
+      - application/json
+      description: Registers a new user and returns the authentication token.
+      parameters:
+      - description: User registration details
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/commands.RegisterUserCommand'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.UserAuthDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Register a new user
+      tags:
+      - Identity
   /api/v1/room/{room_id}/players/{player_id}:
     delete:
       consumes:
