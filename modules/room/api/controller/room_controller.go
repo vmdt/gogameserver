@@ -15,6 +15,9 @@ func RoomRoute(echo *echo.Echo, ctx context.Context, log logger.ILogger, validat
 	group.POST("/player/create", handler.PlayerCreateRoomHandler(validator, ctx))
 	group.POST("/player/join", handler.PlayerJoinRoomHandler(validator, ctx))
 
+	// Battleship options
+	group.PUT("/:room_id/battleship-options", handler.UpdateBattleshipOptions(validator, ctx))
+
 	group.PUT("/status", handler.UpdateRoomStatusHandler(validator, ctx))
 	group.POST("/create", handler.CreateRoomHandler())
 	group.GET("/:id", handler.GetRoomHandler())

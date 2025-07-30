@@ -1,4 +1,16 @@
 definitions:
+  battleship_options_cmd.UpdateBattleshipOptionsCmd:
+    properties:
+      time_per_turn:
+        description: in seconds
+        type: integer
+      time_place_ship:
+        description: in seconds
+        type: integer
+      who_go_first:
+        description: '0: random'
+        type: integer
+    type: object
   commands.AttackBattleShipCommand:
     properties:
       player_id:
@@ -134,6 +146,23 @@ definitions:
           $ref: '#/definitions/domain.Shot'
         type: array
     type: object
+  dtos.BattleshipOptionsDTO:
+    properties:
+      id:
+        type: string
+      room_id:
+        description: UUID of the room
+        type: string
+      time_per_turn:
+        description: in seconds
+        type: integer
+      time_place_ship:
+        description: in seconds
+        type: integer
+      who_go_first:
+        description: '0: random, 1: player1, 2: player2'
+        type: integer
+    type: object
   dtos.PlayerDTO:
     properties:
       created_at:
@@ -153,6 +182,8 @@ definitions:
         type: string
       id:
         type: string
+      options:
+        $ref: '#/definitions/dtos.BattleshipOptionsDTO'
       status:
         type: string
       turn:
@@ -392,6 +423,40 @@ paths:
       summary: Register a new user
       tags:
       - Identity
+  /api/v1/room/{room_id}/battleship-options:
+    put:
+      consumes:
+      - application/json
+      description: Allows updating the battleship options for a specific room
+      parameters:
+      - description: Update Battleship Options Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/battleship_options_cmd.UpdateBattleshipOptionsCmd'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.BattleshipOptionsDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update Battleship Options
+      tags:
+      - Room.Battleship
   /api/v1/room/{room_id}/players/{player_id}:
     delete:
       consumes:

@@ -9,6 +9,19 @@ import (
 	"github.com/vmdt/gogameserver/pkg/logger"
 )
 
+type RoomReadyEvent struct {
+	RoomId   string `json:"room_id"`
+	PlayerId string `json:"player_id"`
+}
+
+func (e *RoomReadyEvent) GetRoomId() string {
+	return e.RoomId
+}
+
+func (e *RoomReadyEvent) GetPlayerId() string {
+	return e.PlayerId
+}
+
 type RoomReadyHandler[T IRoomReadyEvent] struct {
 	log         logger.ILogger
 	ctx         context.Context
