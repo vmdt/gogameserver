@@ -20,6 +20,6 @@ func BattleshipRoute(
 	group.GET("/room/:room_id/player/:player_id", handler.GetBattleShipBoardHandler(validator, log, ctx))
 
 	group.PUT("/attack", handler.AttackBattleShipHandler(validator, log, ctx))
-	group.POST("/", handler.CreateBattleShipBoardHandler(validator, log, ctx))
+	group.POST("", handler.CreateBattleShipBoardHandler(validator, log, ctx))
 	return nil
 }
