@@ -7,6 +7,7 @@ import (
 	"github.com/mehdihadeli/go-mediatr"
 	"github.com/vmdt/gogameserver/modules/player/application/commands"
 	player_dtos "github.com/vmdt/gogameserver/modules/player/application/dtos"
+	battleship_options_cmd "github.com/vmdt/gogameserver/modules/room/application/commands/battleship_options"
 	player_room_cmd "github.com/vmdt/gogameserver/modules/room/application/commands/player_room"
 	"github.com/vmdt/gogameserver/modules/room/application/dtos"
 	"github.com/vmdt/gogameserver/modules/room/application/events"
@@ -14,15 +15,23 @@ import (
 	"github.com/vmdt/gogameserver/pkg/logger"
 )
 
-type PlayerCreateRoomCommand struct {
-	Name   string  `json:"name" validate:"required"`
-	UserId *string `json:"user_id"`
+type BattleshipOptions struct {
+	TimePerTurn   int `json:"time_per_turn"`   // in seconds
+	TimePlaceShip int `json:"time_place_ship"` // in seconds
+	WhoGoFirst    int `json:"who_go_first"`    // 0: random, 1: player1, 2: player2
 }
 
-func NewPlayerCreateRoomCommand(name string, userId *string) *PlayerCreateRoomCommand {
+type PlayerCreateRoomCommand struct {
+	Name    string             `json:"name" validate:"required"`
+	UserId  *string            `json:"user_id"`
+	Options *BattleshipOptions `json:"options"`
+}
+
+func NewPlayerCreateRoomCommand(name string, userId *string, options *BattleshipOptions) *PlayerCreateRoomCommand {
 	return &PlayerCreateRoomCommand{
-		Name:   name,
-		UserId: userId,
+		Name:    name,
+		UserId:  userId,
+		Options: options,
 	}
 }
 
@@ -45,10 +54,24 @@ func (h *PlayerCreateRoomHandler) Handle(ctx context.Context, command *PlayerCre
 	if err != nil {
 		return nil, err
 	}
+	turn := 1
+	if command.Options != nil {
+		if command.Options.WhoGoFirst == 0 {
+			// Randomly select between 1 and 2
+			if uuid.New().ID()%2 == 0 {
+				turn = 1
+			} else {
+				turn = 2
+			}
+		} else {
+			turn = command.Options.WhoGoFirst
+		}
+	}
 
 	room, err := h.roomRepo.CreateRoom(ctx, &domain.Room{
 		ID:     uuid.New(),
 		Status: "lobby",
+		Turn:   turn,
 	})
 	if err != nil {
 		return nil, err
@@ -59,6 +82,22 @@ func (h *PlayerCreateRoomHandler) Handle(ctx context.Context, command *PlayerCre
 		return nil, err
 	}
 
+	var battleshipOptionsDto *dtos.BattleshipOptionsDTO
+	if command.Options != nil {
+		battleshipOptionsCmd := battleship_options_cmd.NewCreateBattleshipOptionsCmd(
+			command.Options.TimePerTurn,
+			command.Options.TimePlaceShip,
+			command.Options.WhoGoFirst,
+			roomPlayer.RoomId.String(),
+		)
+		var err error
+		battleshipOptionsDto, err = mediatr.Send[*battleship_options_cmd.CreateBattleshipOptionsCmd, *dtos.BattleshipOptionsDTO](ctx, battleshipOptionsCmd)
+		if err != nil {
+			h.log.Error("Failed to create battleship options", "error", err)
+			return nil, err
+		}
+	}
+
 	joinRoomEvent := events.NewJoinRoomEvent(roomPlayer.RoomId.String(), roomPlayer.PlayerId.String())
 	if err := mediatr.Publish[*events.JoinRoomEvent](ctx, joinRoomEvent); err != nil {
 		h.log.Error("Failed to publish JoinRoomEvent", "error", err)
@@ -66,10 +105,12 @@ func (h *PlayerCreateRoomHandler) Handle(ctx context.Context, command *PlayerCre
 	}
 
 	roomDto := &dtos.RoomDTO{
-		ID:        roomPlayer.RoomId.String(),
-		Status:    room.Status,
-		CreatedAt: room.CreatedAt,
-		UpdatedAt: room.UpdatedAt,
+		ID:                roomPlayer.RoomId.String(),
+		Status:            room.Status,
+		Turn:              room.Turn,
+		BattleshipOptions: battleshipOptionsDto,
+		CreatedAt:         room.CreatedAt,
+		UpdatedAt:         room.UpdatedAt,
 	}
 
 	playerDto := &player_dtos.PlayerDTO{
@@ -85,6 +126,7 @@ func (h *PlayerCreateRoomHandler) Handle(ctx context.Context, command *PlayerCre
 		IsReady:        roomPlayer.IsReady,
 		IsDisconnected: roomPlayer.IsDisconnected,
 		DisconnectedAt: roomPlayer.DisconnectedAt,
+		Me:             roomPlayer.Me,
 		Room:           roomDto,
 		Player:         playerDto,
 	}, nil

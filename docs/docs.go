@@ -555,6 +555,23 @@ const docTemplate = `{
                 }
             }
         },
+        "commands.BattleshipOptions": {
+            "type": "object",
+            "properties": {
+                "time_per_turn": {
+                    "description": "in seconds",
+                    "type": "integer"
+                },
+                "time_place_ship": {
+                    "description": "in seconds",
+                    "type": "integer"
+                },
+                "who_go_first": {
+                    "description": "0: random, 1: player1, 2: player2",
+                    "type": "integer"
+                }
+            }
+        },
         "commands.JoinRoomCommand": {
             "type": "object",
             "required": [
@@ -602,6 +619,9 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
+                "options": {
+                    "$ref": "#/definitions/commands.BattleshipOptions"
+                },
                 "user_id": {
                     "type": "string"
                 }
@@ -609,6 +629,11 @@ const docTemplate = `{
         },
         "commands.RegisterUserCommand": {
             "type": "object",
+            "required": [
+                "email",
+                "password",
+                "username"
+            ],
             "properties": {
                 "email": {
                     "type": "string"
@@ -617,10 +642,14 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "password": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 6
                 },
                 "username": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 50,
+                    "minLength": 3
                 }
             }
         },

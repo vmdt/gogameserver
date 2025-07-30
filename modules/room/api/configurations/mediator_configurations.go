@@ -7,6 +7,7 @@ import (
 	"github.com/redis/go-redis/v9"
 	boardgame_events "github.com/vmdt/gogameserver/modules/boardgame/application/events"
 	"github.com/vmdt/gogameserver/modules/room/application/commands"
+	battleship_options_cmd "github.com/vmdt/gogameserver/modules/room/application/commands/battleship_options"
 	player_room_cmd "github.com/vmdt/gogameserver/modules/room/application/commands/player_room"
 	"github.com/vmdt/gogameserver/modules/room/application/events"
 	"github.com/vmdt/gogameserver/modules/room/application/query"
@@ -48,6 +49,11 @@ func ConfigRoomMediator(
 	}
 
 	err = mediatr.RegisterRequestHandler(commands.NewUpdateRoomStatusCommandHandler(log, ctx, roomRepo))
+	if err != nil {
+		return err
+	}
+
+	err = mediatr.RegisterRequestHandler(battleship_options_cmd.NewCreateBattleshipOptionsCmdHandler(log, ctx, db))
 	if err != nil {
 		return err
 	}
