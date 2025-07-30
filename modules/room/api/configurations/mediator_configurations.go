@@ -58,6 +58,11 @@ func ConfigRoomMediator(
 		return err
 	}
 
+	err = mediatr.RegisterRequestHandler(battleship_options_cmd.NewUpdateBattleshipOptionsCmdHandler(log, ctx, db))
+	if err != nil {
+		return err
+	}
+
 	// Register internal command handler for creating room players
 	err = mediatr.RegisterRequestHandler(player_room_cmd.NewInternalCreateRoomPlayerCommandHandler(log, ctx, db))
 	if err != nil {
@@ -91,6 +96,16 @@ func ConfigRoomMediator(
 	}
 
 	err = mediatr.RegisterNotificationHandler(events.NewAttackBattleShipBoardEventHandler(log, ctx, db, redisClient))
+	if err != nil {
+		return err
+	}
+
+	err = mediatr.RegisterNotificationHandler(events.NewUpdateBattleshipOptionsEventHandler(log, ctx, db, redisClient))
+	if err != nil {
+		return err
+	}
+
+	err = mediatr.RegisterNotificationHandler(events.NewUpdateTurnEventHandler(log, ctx, db))
 	if err != nil {
 		return err
 	}

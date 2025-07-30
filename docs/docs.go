@@ -418,6 +418,58 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/room/{room_id}/battleship-options": {
+            "put": {
+                "description": "Allows updating the battleship options for a specific room",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Room.Battleship"
+                ],
+                "summary": "Update Battleship Options",
+                "parameters": [
+                    {
+                        "description": "Update Battleship Options Request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/battleship_options_cmd.UpdateBattleshipOptionsCmd"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dtos.BattleshipOptionsDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/room/{room_id}/players/{player_id}": {
             "put": {
                 "description": "Partially updates the information of a player in a room.",
@@ -541,6 +593,23 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "battleship_options_cmd.UpdateBattleshipOptionsCmd": {
+            "type": "object",
+            "properties": {
+                "time_per_turn": {
+                    "description": "in seconds",
+                    "type": "integer"
+                },
+                "time_place_ship": {
+                    "description": "in seconds",
+                    "type": "integer"
+                },
+                "who_go_first": {
+                    "description": "0: random",
+                    "type": "integer"
+                }
+            }
+        },
         "commands.AttackBattleShipCommand": {
             "type": "object",
             "properties": {
@@ -741,6 +810,30 @@ const docTemplate = `{
                 }
             }
         },
+        "dtos.BattleshipOptionsDTO": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "room_id": {
+                    "description": "UUID of the room",
+                    "type": "string"
+                },
+                "time_per_turn": {
+                    "description": "in seconds",
+                    "type": "integer"
+                },
+                "time_place_ship": {
+                    "description": "in seconds",
+                    "type": "integer"
+                },
+                "who_go_first": {
+                    "description": "0: random, 1: player1, 2: player2",
+                    "type": "integer"
+                }
+            }
+        },
         "dtos.PlayerDTO": {
             "type": "object",
             "properties": {
@@ -769,6 +862,9 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "string"
+                },
+                "options": {
+                    "$ref": "#/definitions/dtos.BattleshipOptionsDTO"
                 },
                 "status": {
                     "type": "string"
