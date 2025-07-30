@@ -56,6 +56,7 @@ func (h *GetRoomHandler) Handle(ctx context.Context, query *GetRoomQuery) (*dtos
 			TimePerTurn:   int(battleshipOptions.TimePerTurn),
 			TimePlaceShip: int(battleshipOptions.TimePlaceShip),
 			WhoGoFirst:    battleshipOptions.WhoGoFirst,
+			StartPlaceAt:  battleshipOptions.StartPlaceAt,
 			RoomId:        room.ID.String(),
 		}
 	} else {

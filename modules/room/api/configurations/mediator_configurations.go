@@ -110,7 +110,7 @@ func ConfigRoomMediator(
 		return err
 	}
 
-	err = mediatr.RegisterNotificationHandler(events.NewUpdateRoomStatusEventHandler(log, ctx, redisClient))
+	err = mediatr.RegisterNotificationHandler(events.NewUpdateRoomStatusEventHandler(log, ctx, db, redisClient))
 	if err != nil {
 		return err
 	}
