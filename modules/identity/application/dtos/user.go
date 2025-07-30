@@ -15,8 +15,8 @@ type UserDTO struct {
 }
 
 type TokenPairDTO struct {
-	AccessToken  json.RawMessage `json:"access_token"`
-	RefreshToken json.RawMessage `json:"refresh_token"`
+	AccessToken  json.RawMessage `json:"access_token" swaggertype:"string"`
+	RefreshToken json.RawMessage `json:"refresh_token" swaggertype:"string"`
 	ExpiresIn    time.Duration   `json:"expires_in" swaggertype:"integer"`
 }
 

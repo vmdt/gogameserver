@@ -42,13 +42,35 @@ func (h *GetRoomHandler) Handle(ctx context.Context, query *GetRoomQuery) (*dtos
 		h.log.Error("Failed to fetch room", "error", err)
 		return nil, errors.New("room not found")
 	}
-	roomDto := &dtos.RoomDTO{
-		ID:        room.ID.String(),
-		Status:    room.Status,
-		Turn:      room.Turn,
-		CreatedAt: room.CreatedAt,
-		UpdatedAt: room.UpdatedAt,
+
+	var battleshipOptions domain.BattleshipOptions
+	errBattleshipOptions := h.dbContext.GetModelDB(&domain.BattleshipOptions{}).Where("room_id = ?", room.ID).First(&battleshipOptions).Error
+	if errBattleshipOptions != nil {
+		h.log.Error("GetRoomHandler: Failed to fetch battleship options", "error", errBattleshipOptions)
 	}
+
+	var battleshipOptionsDTO *dtos.BattleshipOptionsDTO
+	if errBattleshipOptions == nil {
+		battleshipOptionsDTO = &dtos.BattleshipOptionsDTO{
+			Id:            battleshipOptions.ID.String(),
+			TimePerTurn:   int(battleshipOptions.TimePerTurn.Seconds()),
+			TimePlaceShip: int(battleshipOptions.TimePlaceShip.Seconds()),
+			WhoGoFirst:    battleshipOptions.WhoGoFirst,
+			RoomId:        room.ID.String(),
+		}
+	} else {
+		battleshipOptionsDTO = nil
+	}
+
+	roomDto := &dtos.RoomDTO{
+		ID:                room.ID.String(),
+		Status:            room.Status,
+		Turn:              room.Turn,
+		BattleshipOptions: battleshipOptionsDTO,
+		CreatedAt:         room.CreatedAt,
+		UpdatedAt:         room.UpdatedAt,
+	}
+
 	var roomPlayers []*domain.RoomPlayer
 	if err := h.dbContext.GetModelDB(&domain.RoomPlayer{}).Where("room_id = ?", room.ID).Preload("Player").Find(&roomPlayers).Error; err != nil {
 		h.log.Error("Failed to fetch room players", "error", err)

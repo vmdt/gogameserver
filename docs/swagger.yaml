@@ -8,6 +8,18 @@ definitions:
       room_id:
         type: string
     type: object
+  commands.BattleshipOptions:
+    properties:
+      time_per_turn:
+        description: in seconds
+        type: integer
+      time_place_ship:
+        description: in seconds
+        type: integer
+      who_go_first:
+        description: '0: random, 1: player1, 2: player2'
+        type: integer
+    type: object
   commands.JoinRoomCommand:
     properties:
       name:
@@ -38,6 +50,8 @@ definitions:
     properties:
       name:
         type: string
+      options:
+        $ref: '#/definitions/commands.BattleshipOptions'
       user_id:
         type: string
     required:
@@ -50,9 +64,17 @@ definitions:
       nation:
         type: string
       password:
+        maxLength: 100
+        minLength: 6
         type: string
       username:
+        maxLength: 50
+        minLength: 3
         type: string
+    required:
+    - email
+    - password
+    - username
     type: object
   commands.UpdateRoomStatusCommand:
     properties:

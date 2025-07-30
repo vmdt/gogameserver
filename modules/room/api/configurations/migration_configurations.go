@@ -19,5 +19,11 @@ func ConfigMigrations(dbContext *infrastructure.RoomDbContext, log logger.ILogge
 		return err
 	}
 
+	db = dbContext.GetModelDB(&domain.BattleshipOptions{})
+	if err := db.AutoMigrate(&domain.BattleshipOptions{}); err != nil {
+		log.Error("Failed to run migrations for BattleshipOptions model: %v", err)
+		return err
+	}
+
 	return nil
 }
