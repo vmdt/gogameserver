@@ -10,6 +10,7 @@ import (
 	"github.com/vmdt/gogameserver/modules/boardgame/application/queries"
 	"github.com/vmdt/gogameserver/modules/boardgame/domain"
 	"github.com/vmdt/gogameserver/modules/boardgame/infrastructure"
+	room_infrastructure "github.com/vmdt/gogameserver/modules/room/infrastructure"
 	"github.com/vmdt/gogameserver/pkg/logger"
 )
 
@@ -18,6 +19,7 @@ func ConfigBattleShipMediator(
 	ctx context.Context,
 	redisClient *redis.Client,
 	db *infrastructure.BoardGameDbContext,
+	roomDbContext *room_infrastructure.RoomDbContext,
 	battleshipRepo domain.IBattleShipRepository,
 ) {
 	// Register commands mediators
@@ -29,6 +31,11 @@ func ConfigBattleShipMediator(
 	err = mediatr.RegisterRequestHandler(commands.NewAttackBattleShipCommandHandler(log, ctx, battleshipRepo))
 	if err != nil {
 		log.Fatalf("failed to register command handler: %v", err)
+	}
+
+	err = mediatr.RegisterRequestHandler(queries.NewCheckWhoWinQueryHandler(log, ctx, db, roomDbContext))
+	if err != nil {
+		log.Fatalf("failed to register query handler: %v", err)
 	}
 
 	// Register queries mediators

@@ -9,3 +9,14 @@ type BattleshipGame struct {
 	Shots         []domain.Shot `json:"shots"`
 	OpponentShots []domain.Shot `json:"opponent_shots"`
 }
+
+type WinStatusDTO struct {
+	PlayerId string `json:"player_id"`
+	Win      bool   `json:"win"`
+	Placed   bool   `json:"placed"`
+}
+
+type WhoWinDTO struct {
+	RoomId    string         `json:"room_id"`
+	WinStatus []WinStatusDTO `json:"win_status"`
+}

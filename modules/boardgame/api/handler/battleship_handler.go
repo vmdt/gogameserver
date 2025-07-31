@@ -141,3 +141,43 @@ func AttackBattleShipHandler(
 		return c.JSON(http.StatusOK, result)
 	}
 }
+
+// CheckWhoWinHandler handles the check for who wins the Battleship game.
+// @Summary      Check Who Wins
+// @Description  Checks who wins the Battleship game for a specific room.
+// @Tags         Board.Battleship
+// @Accept       json
+// @Produce      json
+// @Param        room_id  path      string  true  "Room ID"
+// @Success      200  {object}   dtos.WhoWinDTO
+// @Failure      400  {string}   string  "Invalid request or Validation error"
+// @Failure      404  {string}   string  "Room not found"
+// @Failure      500  {string}   string  "Internal server error"
+// @Router       /api/v1/boardgame/battleship/room/{room_id}/check-who-win [get]
+func CheckWhoWin(
+	validator *validator.Validate,
+	log logger.ILogger,
+	ctx context.Context,
+) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var query queries.CheckWhoWinQuery
+		if err := c.Bind(&query); err != nil {
+			log.Error("Failed to bind request", "error", err)
+			return c.JSON(http.StatusBadRequest, "Invalid request")
+		}
+
+		if err := validator.Struct(query); err != nil {
+			log.Error("Validation failed", "error", err)
+			return c.JSON(http.StatusBadRequest, "Validation error")
+		}
+
+		cmd := queries.NewCheckWhoWinQuery(query.RoomId)
+		result, err := mediatr.Send[*queries.CheckWhoWinQuery, *dtos.WhoWinDTO](ctx, cmd)
+		if err != nil {
+			log.Error("Failed to check who win", "error", err)
+			return c.JSON(http.StatusInternalServerError, err.Error())
+		}
+
+		return c.JSON(http.StatusOK, result)
+	}
+}
