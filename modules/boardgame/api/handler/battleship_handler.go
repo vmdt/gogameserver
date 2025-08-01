@@ -181,3 +181,43 @@ func CheckWhoWin(
 		return c.JSON(http.StatusOK, result)
 	}
 }
+
+// CheckSunkShipStatusHandler handles the checking of sunk ship status.
+// @Summary      Check Sunk Ship Status
+// @Description  Checks the status of sunk ships for a specific player in a room.
+// @Tags         Board.Battleship
+// @Accept       json
+// @Produce      json
+// @Param        CheckSunkShipStatusQuery  body      queries.CheckSunkShipStatusQuery  true  "Check Sunk Ship Status Query Data"
+// @Success      200  {object}   dtos.SunkShipsDTO
+// @Failure      400  {string}   string  "Invalid request or Validation error"
+// @Failure      404  {string}   string  "Player or room not found"
+// @Failure      500  {string}   string  "Internal server error"
+// @Router       /api/v1/boardgame/battleship/room/{room_id}/player/{player_id}/check-sunk-ships [get]
+func CheckSunkShipStatus(
+	validator *validator.Validate,
+	log logger.ILogger,
+	ctx context.Context,
+) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var query queries.CheckSunkShipStatusQuery
+		if err := c.Bind(&query); err != nil {
+			log.Error("Failed to bind request", "error", err)
+			return c.JSON(http.StatusBadRequest, "Invalid request")
+		}
+
+		if err := validator.Struct(query); err != nil {
+			log.Error("Validation failed", "error", err)
+			return c.JSON(http.StatusBadRequest, "Validation error")
+		}
+
+		cmd := queries.NewCheckSunkShipStatusQuery(query.PlayerId, query.RoomId)
+		result, err := mediatr.Send[*queries.CheckSunkShipStatusQuery, *dtos.SunkShipsDTO](ctx, cmd)
+		if err != nil {
+			log.Error("Failed to check sunk ship status", "error", err)
+			return c.JSON(http.StatusInternalServerError, err.Error())
+		}
+
+		return c.JSON(http.StatusOK, result)
+	}
+}

@@ -17,6 +17,7 @@ func BattleshipRoute(
 ) error {
 	group := echo.Group("/api/v1/boardgame/battleship")
 
+	group.GET("/room/:room_id/player/:player_id/check-sunk-ships", handler.CheckSunkShipStatus(validator, log, ctx))
 	group.GET("/room/:room_id/check-who-win", handler.CheckWhoWin(validator, log, ctx))
 	group.GET("/room/:room_id/player/:player_id", handler.GetBattleShipBoardHandler(validator, log, ctx))
 

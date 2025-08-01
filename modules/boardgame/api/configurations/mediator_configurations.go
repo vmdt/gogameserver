@@ -43,9 +43,17 @@ func ConfigBattleShipMediator(
 	if err != nil {
 		log.Fatalf("failed to register query handler: %v", err)
 	}
+	err = mediatr.RegisterRequestHandler(queries.NewCheckSunkShipStatusQueryHandler(log, ctx, db, roomDbContext))
+	if err != nil {
+		log.Fatalf("failed to register query handler: %v", err)
+	}
 
 	// Register events mediators
 	err = mediatr.RegisterNotificationHandler(events.NewAttackBattleShipBoardEventHandler(log, ctx, redisClient))
+	if err != nil {
+		log.Fatalf("failed to register event handler: %v", err)
+	}
+	err = mediatr.RegisterNotificationHandler(events.NewEndgameEventHandler(log, ctx, redisClient))
 	if err != nil {
 		log.Fatalf("failed to register event handler: %v", err)
 	}

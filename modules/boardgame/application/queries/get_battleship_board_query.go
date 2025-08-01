@@ -73,10 +73,13 @@ func (h *GetBattleshipBoardQueryHandler) Handle(ctx context.Context, query *GetB
 	_ = json.Unmarshal(board.Shots, &shots)
 
 	return &dtos.BattleshipGame{
-		PlayerId:      board.PlayerId.String(),
-		RoomId:        board.RoomId.String(),
-		Ships:         ships,
-		Shots:         shots,
-		OpponentShots: oppShots,
+		PlayerId:       board.PlayerId.String(),
+		RoomId:         board.RoomId.String(),
+		Ships:          ships,
+		Shots:          shots,
+		OpponentShots:  oppShots,
+		CreatedAt:      board.CreatedAt,
+		UpdatedAt:      board.UpdatedAt,
+		OpponentShotAt: board.OpponentShotAt,
 	}, nil
 }

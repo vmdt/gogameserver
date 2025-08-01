@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"time"
 
 	"github.com/mehdihadeli/go-mediatr"
 	"github.com/vmdt/gogameserver/modules/boardgame/application/events"
@@ -76,6 +77,15 @@ func (h *AttackBattleShipCommandHandler) Handle(ctx context.Context, command *At
 					shotStatus = "hit"
 				}
 			}
+		}
+
+		// update opp
+		now := time.Now()
+		opponent.UpdateOpponentShotAt(&now)
+		_, err = h.bsRepo.AddOrUpdate(opponent)
+		if err != nil {
+			h.log.Error("Failed to update opponent's battleship board", "error", err)
+			return false, err
 		}
 	}
 	// Update the shots for the current player
