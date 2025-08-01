@@ -11,6 +11,8 @@ type Room struct {
 	ID        uuid.UUID  `gorm:"type:uuid;primaryKey" json:"id"`
 	Status    string     `gorm:"type:varchar(50)" json:"status"`
 	Turn      int        `gorm:"default:0" json:"turn"`
+	WhoWin    int        `gorm:"default:0" json:"who_win"`
+	IsEnded   bool       `gorm:"default:false" json:"is_ended"`
 	CreatedAt *time.Time `gorm:"autoCreateTime" json:"created_at"`
 	UpdatedAt *time.Time `gorm:"autoUpdateTime" json:"updated_at"`
 }

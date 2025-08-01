@@ -138,3 +138,39 @@ func UpdateRoomStatusHandler(validator *validator.Validate, ctx context.Context)
 		return c.JSON(200, result)
 	}
 }
+
+// SetWhoWinHandler handles the command to set the winner of a room.
+// @Summary      Set Who Win
+// @Description  Sets the winner of a room based on the player ID.
+// @Tags         Room
+// @Accept       json
+// @Produce      json
+// @Param        request  body      commands.SetWhoWinCommand  true  "Set Who Win Request"
+// @Success      200  {object}   dtos.RoomDTO
+// @Failure      400  {object}   map[string]string
+// @Failure      500  {object}   map[string]string
+// @Router       /api/v1/room/{roomId}/set-who-win [put]
+func SetWhoWinHandler(
+	validator *validator.Validate,
+	ctx context.Context,
+) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		request := &commands.SetWhoWinCommand{}
+		if err := c.Bind(request); err != nil {
+			return c.JSON(400, "Invalid request")
+		}
+
+		if err := validator.StructCtx(ctx, request); err != nil {
+			return c.JSON(400, err.Error())
+		}
+
+		cmd := commands.NewSetWhoWinCommand(request.RoomId, request.PlayerId)
+
+		result, err := mediatr.Send[*commands.SetWhoWinCommand, *dtos.RoomDTO](ctx, cmd)
+		if err != nil {
+			return c.JSON(500, err.Error())
+		}
+
+		return c.JSON(200, result)
+	}
+}

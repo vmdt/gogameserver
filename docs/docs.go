@@ -208,6 +208,58 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/boardgame/battleship/room/{room_id}/player/{player_id}/check-sunk-ships": {
+            "get": {
+                "description": "Checks the status of sunk ships for a specific player in a room.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Board.Battleship"
+                ],
+                "summary": "Check Sunk Ship Status",
+                "parameters": [
+                    {
+                        "description": "Check Sunk Ship Status Query Data",
+                        "name": "CheckSunkShipStatusQuery",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/queries.CheckSunkShipStatusQuery"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dtos.SunkShipsDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request or Validation error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Player or room not found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/identity/login": {
             "post": {
                 "description": "Authenticates a user and returns the authentication token.",
@@ -437,6 +489,58 @@ const docTemplate = `{
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/commands.UpdateRoomStatusCommand"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dtos.RoomDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/room/{roomId}/set-who-win": {
+            "put": {
+                "description": "Sets the winner of a room based on the player ID.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Room"
+                ],
+                "summary": "Set Who Win",
+                "parameters": [
+                    {
+                        "description": "Set Who Win Request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/commands.SetWhoWinCommand"
                         }
                     }
                 ],
@@ -772,6 +876,14 @@ const docTemplate = `{
                 }
             }
         },
+        "commands.SetWhoWinCommand": {
+            "type": "object",
+            "properties": {
+                "player_id": {
+                    "type": "string"
+                }
+            }
+        },
         "commands.UpdateRoomStatusCommand": {
             "type": "object",
             "required": [
@@ -834,6 +946,12 @@ const docTemplate = `{
         "dtos.BattleshipGame": {
             "type": "object",
             "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "opponent_shot_at": {
+                    "type": "string"
+                },
                 "opponent_shots": {
                     "type": "array",
                     "items": {
@@ -857,6 +975,9 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/domain.Shot"
                     }
+                },
+                "updated_at": {
+                    "type": "string"
                 }
             }
         },
@@ -917,6 +1038,9 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
+                "is_ended": {
+                    "type": "boolean"
+                },
                 "options": {
                     "$ref": "#/definitions/dtos.BattleshipOptionsDTO"
                 },
@@ -928,6 +1052,9 @@ const docTemplate = `{
                 },
                 "updated_at": {
                     "type": "string"
+                },
+                "who_win": {
+                    "type": "integer"
                 }
             }
         },
@@ -963,6 +1090,34 @@ const docTemplate = `{
                 },
                 "status": {
                     "type": "integer"
+                }
+            }
+        },
+        "dtos.SunkShipDTO": {
+            "type": "object",
+            "properties": {
+                "is_sunk": {
+                    "type": "boolean"
+                },
+                "ship_name": {
+                    "type": "string"
+                },
+                "size": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dtos.SunkShipsDTO": {
+            "type": "object",
+            "properties": {
+                "player_id": {
+                    "type": "string"
+                },
+                "ships": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dtos.SunkShipDTO"
+                    }
                 }
             }
         },
@@ -1056,6 +1211,21 @@ const docTemplate = `{
                 },
                 "is_ready": {
                     "type": "boolean"
+                }
+            }
+        },
+        "queries.CheckSunkShipStatusQuery": {
+            "type": "object",
+            "required": [
+                "playerId",
+                "roomId"
+            ],
+            "properties": {
+                "playerId": {
+                    "type": "string"
+                },
+                "roomId": {
+                    "type": "string"
                 }
             }
         }

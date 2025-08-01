@@ -97,7 +97,7 @@ func (h *CheckWhoWinQueryHandler) Handle(ctx context.Context, query *CheckWhoWin
 			}
 		}
 	} else if room.Status == "battle" {
-		// TODO: Implement logic to check who wins based on shots
+
 	}
 
 	return whoWinDTO, nil

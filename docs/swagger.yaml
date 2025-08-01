@@ -88,6 +88,11 @@ definitions:
     - password
     - username
     type: object
+  commands.SetWhoWinCommand:
+    properties:
+      player_id:
+        type: string
+    type: object
   commands.UpdateRoomStatusCommand:
     properties:
       room_id:
@@ -129,6 +134,10 @@ definitions:
     type: object
   dtos.BattleshipGame:
     properties:
+      created_at:
+        type: string
+      opponent_shot_at:
+        type: string
       opponent_shots:
         items:
           $ref: '#/definitions/domain.Shot'
@@ -145,6 +154,8 @@ definitions:
         items:
           $ref: '#/definitions/domain.Shot'
         type: array
+      updated_at:
+        type: string
     type: object
   dtos.BattleshipOptionsDTO:
     properties:
@@ -185,6 +196,8 @@ definitions:
         type: string
       id:
         type: string
+      is_ended:
+        type: boolean
       options:
         $ref: '#/definitions/dtos.BattleshipOptionsDTO'
       status:
@@ -193,6 +206,8 @@ definitions:
         type: integer
       updated_at:
         type: string
+      who_win:
+        type: integer
     type: object
   dtos.RoomPlayerDTO:
     properties:
@@ -216,6 +231,24 @@ definitions:
         type: string
       status:
         type: integer
+    type: object
+  dtos.SunkShipDTO:
+    properties:
+      is_sunk:
+        type: boolean
+      ship_name:
+        type: string
+      size:
+        type: integer
+    type: object
+  dtos.SunkShipsDTO:
+    properties:
+      player_id:
+        type: string
+      ships:
+        items:
+          $ref: '#/definitions/dtos.SunkShipDTO'
+        type: array
     type: object
   dtos.TokenPairDTO:
     properties:
@@ -276,6 +309,16 @@ definitions:
         type: boolean
       is_ready:
         type: boolean
+    type: object
+  queries.CheckSunkShipStatusQuery:
+    properties:
+      playerId:
+        type: string
+      roomId:
+        type: string
+    required:
+    - playerId
+    - roomId
     type: object
 info:
   contact: {}
@@ -407,6 +450,40 @@ paths:
           schema:
             type: string
       summary: Get Battleship Board
+      tags:
+      - Board.Battleship
+  /api/v1/boardgame/battleship/room/{room_id}/player/{player_id}/check-sunk-ships:
+    get:
+      consumes:
+      - application/json
+      description: Checks the status of sunk ships for a specific player in a room.
+      parameters:
+      - description: Check Sunk Ship Status Query Data
+        in: body
+        name: CheckSunkShipStatusQuery
+        required: true
+        schema:
+          $ref: '#/definitions/queries.CheckSunkShipStatusQuery'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.SunkShipsDTO'
+        "400":
+          description: Invalid request or Validation error
+          schema:
+            type: string
+        "404":
+          description: Player or room not found
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: Check Sunk Ship Status
       tags:
       - Board.Battleship
   /api/v1/identity/login:
@@ -592,6 +669,40 @@ paths:
       summary: Update a player in a room
       tags:
       - Room.Players
+  /api/v1/room/{roomId}/set-who-win:
+    put:
+      consumes:
+      - application/json
+      description: Sets the winner of a room based on the player ID.
+      parameters:
+      - description: Set Who Win Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/commands.SetWhoWinCommand'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.RoomDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Set Who Win
+      tags:
+      - Room
   /api/v1/room/player/create:
     post:
       consumes:

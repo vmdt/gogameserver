@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"encoding/json"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/mehdihadeli/go-mediatr"
@@ -55,11 +56,13 @@ func (h *CreateBattleShipBoardCommandHandler) Handle(ctx context.Context, comman
 		h.log.Error("Failed to marshal shots", "error", err)
 		return nil, err
 	}
+	now := time.Now()
 	battleShip := &domain.BattleShip{
-		PlayerId: uuid.MustParse(command.PlayerId),
-		RoomId:   uuid.MustParse(command.RoomId),
-		Ships:    shipsJson,
-		Shots:    shotsJson,
+		PlayerId:       uuid.MustParse(command.PlayerId),
+		RoomId:         uuid.MustParse(command.RoomId),
+		Ships:          shipsJson,
+		Shots:          shotsJson,
+		OpponentShotAt: &now,
 	}
 	createdBoard, err := h.bsRepo.AddOrUpdate(battleShip)
 	if err != nil {
