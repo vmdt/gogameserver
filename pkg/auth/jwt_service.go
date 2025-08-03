@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"errors"
 	"strconv"
 	"time"
 
@@ -76,6 +77,16 @@ func (s *jwtService) Verify(token string) (*jwt.VerifiedToken, error) {
 	if secret == "" {
 		panic("Please setup SecretKey")
 	}
-	return jwt.Verify(jwt.HS256, []byte(secret), []byte(token), jwt.Plain)
 
+	verifiedToken, err := jwt.Verify(jwt.HS256, []byte(secret), []byte(token), jwt.Plain)
+	if err != nil {
+		return nil, err
+	}
+
+	exp := verifiedToken.StandardClaims.Expiry
+	if exp > 0 && time.Now().Unix() > exp {
+		return nil, errors.New("token expired")
+	}
+
+	return verifiedToken, nil
 }

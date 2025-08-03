@@ -35,5 +35,12 @@ func ConfigMediators(
 		return err
 	}
 
+	err = mediatr.RegisterRequestHandler(
+		commands.NewRefreshTokenCommandHandler(log, ctx, userRepo, jwtService),
+	)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

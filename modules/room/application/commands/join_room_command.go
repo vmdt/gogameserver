@@ -78,7 +78,7 @@ func (h *JoinRoomHandler) Handle(ctx context.Context, command *JoinRoomCommand) 
 		return nil, err
 	}
 
-	joinRoomEvent := events.NewJoinRoomEvent(roomPlayer.RoomId.String(), roomPlayer.PlayerId.String())
+	joinRoomEvent := events.NewJoinRoomEvent(roomPlayer.RoomId.String(), roomPlayer.PlayerId.String(), *command.UserId)
 	if err := mediatr.Publish[*events.JoinRoomEvent](ctx, joinRoomEvent); err != nil {
 		h.log.Error("Failed to publish JoinRoomEvent", "error", err)
 		return nil, err

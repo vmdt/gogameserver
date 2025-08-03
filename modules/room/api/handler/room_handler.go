@@ -66,6 +66,8 @@ func PlayerCreateRoomHandler(validator *validator.Validate, ctx context.Context)
 			return c.JSON(400, map[string]string{"error": err.Error()})
 		}
 
+		ctx = c.Request().Context()
+
 		result, err := mediatr.Send[*commands.PlayerCreateRoomCommand, *dtos.RoomPlayerDTO](ctx, request)
 
 		if err != nil {

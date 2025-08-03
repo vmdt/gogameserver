@@ -32,6 +32,8 @@ func (r *Room) ToDTO() *dtos.RoomDTO {
 		ID:        r.ID.String(),
 		Status:    r.Status,
 		Turn:      r.Turn,
+		WhoWin:    r.WhoWin,
+		IsEnded:   r.IsEnded,
 		CreatedAt: r.CreatedAt,
 		UpdatedAt: r.UpdatedAt,
 	}

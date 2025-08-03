@@ -29,6 +29,11 @@ func NewAttackBattleShipBoardEventHandler(log logger.ILogger, ctx context.Contex
 }
 
 func (h *AttackBattleShipBoardEventHandler) Handle(ctx context.Context, event *boardgame_events.AttackBattleShipBoardEvent) error {
+	if event.IsWin {
+		h.log.Info("Player has won the game", "player_id", event.PlayerId, "room_id", event.RoomId)
+		return nil
+	}
+
 	go func(db *infrastructure.RoomDbContext, event *boardgame_events.AttackBattleShipBoardEvent) {
 		h.log.Info("Handling AttackBattleShipBoardEvent", "player_id", event.PlayerId, "room_id", event.RoomId, "shot", event.Shot)
 		var roomPlayers []domain.RoomPlayer

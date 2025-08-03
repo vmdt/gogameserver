@@ -69,6 +69,13 @@ definitions:
     required:
     - name
     type: object
+  commands.RefreshTokenCommand:
+    properties:
+      refresh_token:
+        type: string
+    required:
+    - refresh_token
+    type: object
   commands.RegisterUserCommand:
     properties:
       email:
@@ -518,6 +525,40 @@ paths:
               type: string
             type: object
       summary: User login
+      tags:
+      - Identity
+  /api/v1/identity/refresh:
+    post:
+      consumes:
+      - application/json
+      description: Refreshes the user's authentication token using a refresh token.
+      parameters:
+      - description: Refresh token details
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/commands.RefreshTokenCommand'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.TokenPairDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Refresh user token
       tags:
       - Identity
   /api/v1/identity/register:
