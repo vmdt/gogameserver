@@ -13,13 +13,15 @@ type AttackBattleShipBoardEvent struct {
 	PlayerId string      `json:"player_id"`
 	RoomId   string      `json:"room_id"`
 	Shot     domain.Shot `json:"shot"`
+	IsWin    bool        `json:"is_win" default:"false"`
 }
 
-func NewAttackBattleShipBoardEvent(playerId, roomId string, shot domain.Shot) *AttackBattleShipBoardEvent {
+func NewAttackBattleShipBoardEvent(playerId, roomId string, shot domain.Shot, isWin bool) *AttackBattleShipBoardEvent {
 	return &AttackBattleShipBoardEvent{
 		PlayerId: playerId,
 		RoomId:   roomId,
 		Shot:     shot,
+		IsWin:    isWin,
 	}
 }
 

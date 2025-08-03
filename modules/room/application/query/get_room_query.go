@@ -67,6 +67,8 @@ func (h *GetRoomHandler) Handle(ctx context.Context, query *GetRoomQuery) (*dtos
 		ID:                room.ID.String(),
 		Status:            room.Status,
 		Turn:              room.Turn,
+		WhoWin:            room.WhoWin,
+		IsEnded:           room.IsEnded,
 		BattleshipOptions: battleshipOptionsDTO,
 		CreatedAt:         room.CreatedAt,
 		UpdatedAt:         room.UpdatedAt,

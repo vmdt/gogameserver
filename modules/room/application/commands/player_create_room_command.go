@@ -2,6 +2,7 @@ package commands
 
 import (
 	"context"
+	"errors"
 
 	"github.com/google/uuid"
 	"github.com/mehdihadeli/go-mediatr"
@@ -13,6 +14,7 @@ import (
 	"github.com/vmdt/gogameserver/modules/room/application/events"
 	"github.com/vmdt/gogameserver/modules/room/domain"
 	"github.com/vmdt/gogameserver/pkg/logger"
+	"github.com/vmdt/gogameserver/server/pkg/auth"
 )
 
 type BattleshipOptions struct {
@@ -98,7 +100,12 @@ func (h *PlayerCreateRoomHandler) Handle(ctx context.Context, command *PlayerCre
 		}
 	}
 
-	joinRoomEvent := events.NewJoinRoomEvent(roomPlayer.RoomId.String(), roomPlayer.PlayerId.String())
+	userId := auth.GetUserId(ctx)
+	if userId == "" {
+		h.log.Error("User ID not found in context")
+		return nil, errors.New("invalid user ID")
+	}
+	joinRoomEvent := events.NewJoinRoomEvent(roomPlayer.RoomId.String(), roomPlayer.PlayerId.String(), userId)
 	if err := mediatr.Publish[*events.JoinRoomEvent](ctx, joinRoomEvent); err != nil {
 		h.log.Error("Failed to publish JoinRoomEvent", "error", err)
 		return nil, err

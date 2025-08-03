@@ -29,6 +29,7 @@ func (h *JoinRoomEventHandler) Handle(ctx context.Context, event *JoinRoomEvent)
 	redisEvent := map[string]string{
 		"room_id":   roomId,
 		"player_id": playerId,
+		"user_id":   event.UserId, // Include user_id in the event
 		"event":     "room:joined",
 	}
 	data, err := json.Marshal(redisEvent)

@@ -7,6 +7,7 @@ import (
 	identity_api "github.com/vmdt/gogameserver/modules/identity/api"
 	player_api "github.com/vmdt/gogameserver/modules/player/api"
 	room_api "github.com/vmdt/gogameserver/modules/room/api"
+	"github.com/vmdt/gogameserver/pkg/auth"
 	echoserver "github.com/vmdt/gogameserver/pkg/echo"
 	elastic "github.com/vmdt/gogameserver/pkg/elasticsearch"
 	"github.com/vmdt/gogameserver/pkg/http"
@@ -32,6 +33,7 @@ func main() {
 				validator.New,
 				redis2.NewRedisClient,
 				elastic.NewElasticClient,
+				auth.NewJwtService,
 			),
 			player_api.Startup(),
 			room_api.Startup(),

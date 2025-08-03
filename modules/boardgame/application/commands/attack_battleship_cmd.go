@@ -7,7 +7,9 @@ import (
 	"time"
 
 	"github.com/mehdihadeli/go-mediatr"
+	"github.com/vmdt/gogameserver/modules/boardgame/application/dtos"
 	"github.com/vmdt/gogameserver/modules/boardgame/application/events"
+	"github.com/vmdt/gogameserver/modules/boardgame/application/queries"
 	"github.com/vmdt/gogameserver/modules/boardgame/domain"
 	room_dtos "github.com/vmdt/gogameserver/modules/room/application/dtos"
 	room_query "github.com/vmdt/gogameserver/modules/room/application/query"
@@ -56,6 +58,15 @@ func (h *AttackBattleShipCommandHandler) Handle(ctx context.Context, command *At
 
 	roomQuery := room_query.NewGetRoomQuery(command.RoomId)
 	roomPlayers, err := mediatr.Send[*room_query.GetRoomQuery, *room_dtos.RoomInformationDTO](ctx, roomQuery)
+	if err != nil {
+		h.log.Error("Failed to get room players", "error", err, "room_id", command.RoomId)
+		return false, err
+	}
+
+	// get data
+	myPlayer := utils.Filter(roomPlayers.Players, func(p *room_dtos.RoomPlayerDTO) bool {
+		return p.PlayerId == command.PlayerId
+	})[0]
 	var shotStatus string = "miss"
 	var oppShips []domain.Ship
 	if len(roomPlayers.Players) > 1 {
@@ -102,11 +113,34 @@ func (h *AttackBattleShipCommandHandler) Handle(ctx context.Context, command *At
 		return false, err
 	}
 
+	// check if endgame
+	sunkStatus, err := mediatr.Send[*queries.CheckSunkShipStatusQuery, *dtos.SunkShipsDTO](h.ctx, queries.NewCheckSunkShipStatusQuery(command.RoomId, command.PlayerId))
+	if err != nil {
+		h.log.Error("Failed to check sunk ship status", "error", errors.New("Failed to check sunk ship status"))
+		return false, err
+	}
+	IsEnded := true
+	for _, sunkShip := range sunkStatus.Ships {
+		if !sunkShip.IsSunk {
+			IsEnded = false
+			break
+		}
+	}
+
+	// Publish the endgame event
+	if IsEnded {
+		endgameEvent := events.NewEndgameEvent(myPlayer.Me, command.PlayerId, command.RoomId)
+		if err := mediatr.Publish(ctx, endgameEvent); err != nil {
+			h.log.Error("Failed to publish endgame event", "error", err)
+			return false, err
+		}
+	}
+
 	// Publish the attack event
 	attackEvent := events.NewAttackBattleShipBoardEvent(command.PlayerId, command.RoomId, domain.Shot{
 		Position: command.Position,
 		Status:   shotStatus,
-	})
+	}, IsEnded)
 	if err := mediatr.Publish(ctx, attackEvent); err != nil {
 		h.log.Error("Failed to publish attack battleship event", "error", err)
 		return false, err
