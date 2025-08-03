@@ -69,3 +69,33 @@ func Login(validator *validator.Validate, ctx context.Context) echo.HandlerFunc 
 		return c.JSON(200, result)
 	}
 }
+
+// RefreshTokenHandler handles refresh token requests
+// @Summary      Refresh user token
+// @Description  Refreshes the user's authentication token using a refresh token.
+// @Tags         Identity
+// @Accept       json
+// @Produce      json
+// @Param        body         body      commands.RefreshTokenCommand     true   "Refresh token details"
+// @Success      200          {object}  dtos.TokenPairDTO
+// @Failure      400          {object}  map[string]string
+// @Failure      500          {object}  map[string]string
+// @Router       /api/v1/identity/refresh [post]
+func RefreshToken(validator *validator.Validate, ctx context.Context) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var req commands.RefreshTokenCommand
+		if err := c.Bind(&req); err != nil {
+			return c.JSON(400, map[string]string{"error": err.Error()})
+		}
+		if err := validator.Struct(req); err != nil {
+			return c.JSON(400, map[string]string{"error": err.Error()})
+		}
+
+		result, err := mediatr.Send[*commands.RefreshTokenCommand, *dtos.TokenPairDTO](c.Request().Context(), &req)
+		if err != nil {
+			return c.JSON(500, map[string]string{"error": err.Error()})
+		}
+
+		return c.JSON(200, result)
+	}
+}

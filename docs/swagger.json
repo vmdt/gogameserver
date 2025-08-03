@@ -301,6 +301,58 @@
                 }
             }
         },
+        "/api/v1/identity/refresh": {
+            "post": {
+                "description": "Refreshes the user's authentication token using a refresh token.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Identity"
+                ],
+                "summary": "Refresh user token",
+                "parameters": [
+                    {
+                        "description": "Refresh token details",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/commands.RefreshTokenCommand"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dtos.TokenPairDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/identity/register": {
             "post": {
                 "description": "Registers a new user and returns the authentication token.",
@@ -835,6 +887,17 @@
                     "$ref": "#/definitions/commands.BattleshipOptions"
                 },
                 "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "commands.RefreshTokenCommand": {
+            "type": "object",
+            "required": [
+                "refresh_token"
+            ],
+            "properties": {
+                "refresh_token": {
                     "type": "string"
                 }
             }

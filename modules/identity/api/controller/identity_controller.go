@@ -14,4 +14,5 @@ func IdentityRoute(echo *echo.Echo, ctx context.Context, log logger.ILogger, val
 
 	group.POST("/register", handler.Register(validator, ctx))
 	group.POST("/login", handler.Login(validator, ctx))
+	group.POST("/refresh", handler.RefreshToken(validator, ctx))
 }
