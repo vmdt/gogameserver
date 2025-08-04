@@ -1,0 +1,4 @@
+socket-service
+.vscode
+config/config.*.json
+.env
