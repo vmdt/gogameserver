@@ -78,13 +78,15 @@ func (h *AttackBattleShipCommandHandler) Handle(ctx context.Context, command *At
 	myPlayer := utils.Filter(roomPlayers.Players, func(p *room_dtos.RoomPlayerDTO) bool {
 		return p.PlayerId == command.PlayerId
 	})[0]
+
 	var shotStatus string = "miss"
 	var oppShips []domain.Ship
+	var opponent *domain.BattleShip
 	if len(roomPlayers.Players) > 1 {
 		oppPlayer := utils.Filter(roomPlayers.Players, func(p *room_dtos.RoomPlayerDTO) bool {
 			return p.PlayerId != command.PlayerId
 		})[0]
-		opponent, err := h.bsRepo.GetBoardGameByPlayerId(oppPlayer.PlayerId, command.RoomId)
+		opponent, err = h.bsRepo.GetBoardGameByPlayerId(oppPlayer.PlayerId, command.RoomId)
 		if err != nil {
 			h.log.Error("Failed to get opponent's battleship board", "error", err)
 			return false, err
@@ -99,15 +101,6 @@ func (h *AttackBattleShipCommandHandler) Handle(ctx context.Context, command *At
 					shotStatus = "hit"
 				}
 			}
-		}
-
-		// update opp
-		now := time.Now()
-		opponent.UpdateOpponentShotAt(&now)
-		_, err = h.bsRepo.AddOrUpdate(opponent)
-		if err != nil {
-			h.log.Error("Failed to update opponent's battleship board", "error", err)
-			return false, err
 		}
 	}
 	// Update the shots for the current player
@@ -142,11 +135,22 @@ func (h *AttackBattleShipCommandHandler) Handle(ctx context.Context, command *At
 		}
 	}
 
+	// Update opponent's shot at time
+	now := time.Now()
+	if opponent != nil {
+		opponent.UpdateOpponentShotAt(&now)
+		_, err = h.bsRepo.AddOrUpdate(opponent)
+		if err != nil {
+			h.log.Error("Failed to update opponent's battleship board", "error", err)
+			return false, err
+		}
+	}
+
 	// Publish the attack event
 	attackEvent := events.NewAttackBattleShipBoardEvent(command.PlayerId, command.RoomId, domain.Shot{
 		Position: command.Position,
 		Status:   shotStatus,
-	}, IsEnded)
+	}, &now, IsEnded)
 	if err := mediatr.Publish(ctx, attackEvent); err != nil {
 		h.log.Error("Failed to publish attack battleship event", "error", err)
 		return false, err
