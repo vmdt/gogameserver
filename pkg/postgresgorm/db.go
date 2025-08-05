@@ -82,7 +82,7 @@ func (db *Gorm) Close() {
 
 func createDB(cfg *GormPostgresConfig) error {
 
-	datasource := fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=require",
+	datasource := fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable",
 		cfg.User,
 		cfg.Password,
 		cfg.Host,

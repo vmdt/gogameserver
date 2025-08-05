@@ -3,6 +3,7 @@ package events
 import (
 	"context"
 	"encoding/json"
+	"time"
 
 	"github.com/redis/go-redis/v9"
 	"github.com/vmdt/gogameserver/modules/boardgame/domain"
@@ -10,18 +11,20 @@ import (
 )
 
 type AttackBattleShipBoardEvent struct {
-	PlayerId string      `json:"player_id"`
-	RoomId   string      `json:"room_id"`
-	Shot     domain.Shot `json:"shot"`
-	IsWin    bool        `json:"is_win" default:"false"`
+	PlayerId   string      `json:"player_id"`
+	RoomId     string      `json:"room_id"`
+	Shot       domain.Shot `json:"shot"`
+	IsWin      bool        `json:"is_win" default:"false"`
+	OpponentAt *time.Time  `json:"opponent_at,omitempty"`
 }
 
-func NewAttackBattleShipBoardEvent(playerId, roomId string, shot domain.Shot, isWin bool) *AttackBattleShipBoardEvent {
+func NewAttackBattleShipBoardEvent(playerId, roomId string, shot domain.Shot, opponentAt *time.Time, isWin bool) *AttackBattleShipBoardEvent {
 	return &AttackBattleShipBoardEvent{
-		PlayerId: playerId,
-		RoomId:   roomId,
-		Shot:     shot,
-		IsWin:    isWin,
+		PlayerId:   playerId,
+		RoomId:     roomId,
+		Shot:       shot,
+		IsWin:      isWin,
+		OpponentAt: opponentAt,
 	}
 }
 
@@ -41,10 +44,11 @@ func NewAttackBattleShipBoardEventHandler(log logger.ILogger, ctx context.Contex
 
 func (h *AttackBattleShipBoardEventHandler) Handle(ctx context.Context, event *AttackBattleShipBoardEvent) error {
 	redisEvent := map[string]any{
-		"player_id": event.PlayerId,
-		"room_id":   event.RoomId,
-		"shot":      event.Shot,
-		"event":     "battleship:attack",
+		"player_id":   event.PlayerId,
+		"room_id":     event.RoomId,
+		"shot":        event.Shot,
+		"opponent_at": event.OpponentAt,
+		"event":       "battleship:attack",
 	}
 
 	data, err := json.Marshal(redisEvent)

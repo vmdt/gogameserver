@@ -88,6 +88,8 @@ func (h *CheckSunkShipStatusQueryHandler) Handle(ctx context.Context, query *Che
 				sunk = false
 				break
 			}
+		}
+		if sunk {
 			numShipSunk++
 		}
 
@@ -107,7 +109,8 @@ func (h *CheckSunkShipStatusQueryHandler) Handle(ctx context.Context, query *Che
 	}
 
 	return &dtos.SunkShipsDTO{
-		PlayerId: query.PlayerId,
-		Ships:    sunkShips,
+		PlayerId:  query.PlayerId,
+		Ships:     sunkShips,
+		NumOfSunk: numShipSunk,
 	}, nil
 }
