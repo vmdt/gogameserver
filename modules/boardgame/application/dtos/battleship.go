@@ -35,6 +35,7 @@ type SunkShipDTO struct {
 }
 
 type SunkShipsDTO struct {
-	PlayerId string        `json:"player_id"`
-	Ships    []SunkShipDTO `json:"ships"`
+	PlayerId  string        `json:"player_id"`
+	Ships     []SunkShipDTO `json:"ships"`
+	NumOfSunk int           `json:"num_of_sunk"`
 }
