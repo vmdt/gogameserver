@@ -32,6 +32,13 @@ definitions:
         description: '0: random, 1: player1, 2: player2'
         type: integer
     type: object
+  commands.ExternalGrantCommand:
+    properties:
+      credential:
+        type: string
+    required:
+    - credential
+    type: object
   commands.JoinRoomCommand:
     properties:
       name:
@@ -250,6 +257,8 @@ definitions:
     type: object
   dtos.SunkShipsDTO:
     properties:
+      num_of_sunk:
+        type: integer
       player_id:
         type: string
       ships:
@@ -493,6 +502,41 @@ paths:
       summary: Check Sunk Ship Status
       tags:
       - Board.Battleship
+  /api/v1/identity/google:
+    post:
+      consumes:
+      - application/json
+      description: Authenticates a user using Google SSO and returns the authentication
+        token.
+      parameters:
+      - description: Google SSO details
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/commands.ExternalGrantCommand'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.UserAuthDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Google SSO login
+      tags:
+      - Identity
   /api/v1/identity/login:
     post:
       consumes:

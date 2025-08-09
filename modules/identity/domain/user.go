@@ -15,6 +15,8 @@ type User struct {
 	Password     string    `gorm:"-" json:"-"`
 	PasswordHash string    `gorm:"not null" json:"-"`
 	Nation       string    `gorm:"type:varchar(50)" json:"nation"`
+	IsSso        bool      `gorm:"default:false" json:"is_sso"`
+	Provider     string    `gorm:"type:varchar(50)" json:"provider"`
 
 	CreatedAt *time.Time `gorm:"autoCreateTime" json:"created_at"`
 	UpdatedAt *time.Time `gorm:"autoUpdateTime" json:"updated_at"`

@@ -12,6 +12,7 @@ import (
 func IdentityRoute(echo *echo.Echo, ctx context.Context, log logger.ILogger, validator *validator.Validate) {
 	group := echo.Group("/api/v1/identity")
 
+	group.POST("/google", handler.GoogleSSO(validator, ctx))
 	group.POST("/register", handler.Register(validator, ctx))
 	group.POST("/login", handler.Login(validator, ctx))
 	group.POST("/refresh", handler.RefreshToken(validator, ctx))
