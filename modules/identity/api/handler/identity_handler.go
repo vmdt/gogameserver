@@ -99,3 +99,35 @@ func RefreshToken(validator *validator.Validate, ctx context.Context) echo.Handl
 		return c.JSON(200, result)
 	}
 }
+
+// GoogleSSO handles Google SSO requests
+// @Summary      Google SSO login
+// @Description  Authenticates a user using Google SSO and returns the authentication token.
+// @Tags         Identity
+// @Accept       json
+// @Produce      json
+// @Param        body         body      commands.ExternalGrantCommand     true   "Google SSO details"
+// @Success      200          {object}  dtos.UserAuthDTO
+// @Failure      400          {object}  map[string]string
+// @Failure      500          {object}  map[string]string
+// @Router       /api/v1/identity/google [post]
+func GoogleSSO(validator *validator.Validate, ctx context.Context) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var req commands.ExternalGrantCommand
+		if err := c.Bind(&req); err != nil {
+			return c.JSON(400, map[string]string{"error": err.Error()})
+		}
+		if err := validator.Struct(req); err != nil {
+			return c.JSON(400, map[string]string{"error": err.Error()})
+		}
+
+		req.Provider = "google" // Set the provider to Google
+
+		result, err := mediatr.Send[*commands.ExternalGrantCommand, *dtos.UserAuthDTO](c.Request().Context(), &req)
+		if err != nil {
+			return c.JSON(500, map[string]string{"error": err.Error()})
+		}
+
+		return c.JSON(200, result)
+	}
+}

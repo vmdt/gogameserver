@@ -5,6 +5,7 @@ import (
 
 	"github.com/mehdihadeli/go-mediatr"
 	"github.com/redis/go-redis/v9"
+	"github.com/vmdt/gogameserver/modules/identity/application"
 	"github.com/vmdt/gogameserver/modules/identity/application/commands"
 	"github.com/vmdt/gogameserver/modules/identity/domain"
 	"github.com/vmdt/gogameserver/modules/identity/infrastructure"
@@ -19,6 +20,7 @@ func ConfigMediators(
 	jwtService auth.IJwtService,
 	db *infrastructure.IdentityDbContext,
 	redisClient *redis.Client,
+	ssoService application.ISsoInfoService,
 ) error {
 	// Register command handlers
 	err := mediatr.RegisterRequestHandler(
@@ -37,6 +39,13 @@ func ConfigMediators(
 
 	err = mediatr.RegisterRequestHandler(
 		commands.NewRefreshTokenCommandHandler(log, ctx, userRepo, jwtService),
+	)
+	if err != nil {
+		return err
+	}
+
+	err = mediatr.RegisterRequestHandler(
+		commands.NewExternalGrantCommandHandler(log, ctx, application.NewExternalGrantValidator(ctx, log, ssoService, jwtService)),
 	)
 	if err != nil {
 		return err

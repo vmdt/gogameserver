@@ -260,6 +260,58 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/identity/google": {
+            "post": {
+                "description": "Authenticates a user using Google SSO and returns the authentication token.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Identity"
+                ],
+                "summary": "Google SSO login",
+                "parameters": [
+                    {
+                        "description": "Google SSO details",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/commands.ExternalGrantCommand"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dtos.UserAuthDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/identity/login": {
             "post": {
                 "description": "Authenticates a user and returns the authentication token.",
@@ -847,6 +899,17 @@ const docTemplate = `{
                 }
             }
         },
+        "commands.ExternalGrantCommand": {
+            "type": "object",
+            "required": [
+                "credential"
+            ],
+            "properties": {
+                "credential": {
+                    "type": "string"
+                }
+            }
+        },
         "commands.JoinRoomCommand": {
             "type": "object",
             "required": [
@@ -1173,6 +1236,9 @@ const docTemplate = `{
         "dtos.SunkShipsDTO": {
             "type": "object",
             "properties": {
+                "num_of_sunk": {
+                    "type": "integer"
+                },
                 "player_id": {
                     "type": "string"
                 },
