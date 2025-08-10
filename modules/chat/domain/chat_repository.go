@@ -2,5 +2,6 @@ package domain
 
 type IChatRepository interface {
 	CreateRoom(chat *Chat) (*Chat, error)
-	ChatChatByRoomId(roomId string) (*Chat, error)
+	ChatChatByRoomId(roomId string, loadMessage bool) (*Chat, error)
+	UpdateChat(chat *Chat) (*Chat, error)
 }

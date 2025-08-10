@@ -2,6 +2,7 @@ package commands
 
 import (
 	"context"
+	"errors"
 
 	"github.com/google/uuid"
 	"github.com/vmdt/gogameserver/modules/chat/application/dtos"
@@ -36,13 +37,24 @@ func NewCreateChatCommandHandler(log logger.ILogger, ctx context.Context, chatRe
 }
 
 func (h *CreateChatCommandHandler) Handle(ctx context.Context, command *CreateChatCommand) (*dtos.ChatDTO, error) {
-	chat := &domain.Chat{
+	// check if the room chat already exists
+	chat, err := h.chatRepository.ChatChatByRoomId(command.RoomId, false)
+	if err != nil {
+		h.log.Error("CreateChatCommandHandler: Failed to check existing chat room", "error", err)
+		return nil, err
+	}
+	if chat != nil {
+		h.log.Warn("CreateChatCommandHandler: Chat room already exists", "room_id", command.RoomId)
+		return nil, errors.New("chat room already exists")
+	}
+
+	newChat := &domain.Chat{
 		ID:       uuid.New(),
 		GameType: domain.GameType(command.GameType),
 		RoomId:   uuid.MustParse(command.RoomId),
 	}
 
-	createdChat, err := h.chatRepository.CreateRoom(chat)
+	createdChat, err := h.chatRepository.CreateRoom(newChat)
 	if err != nil {
 		h.log.Error("CreateChatCommandHandler: Failed to create chat room", "error", err)
 		return nil, err

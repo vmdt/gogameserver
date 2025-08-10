@@ -46,3 +46,7 @@ func (c *Chat) GetMessagesDTO() []dtos.ChatMessageDTO {
 	}
 	return messagesDTO
 }
+
+func (c *Chat) AddMessage(message *ChatMessage) {
+	c.Messages = append(c.Messages, *message)
+}

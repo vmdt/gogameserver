@@ -35,7 +35,7 @@ func NewGetChatQueryHandler(log logger.ILogger, ctx context.Context, chatReposit
 func (h *GetChatQueryHandler) Handle(ctx context.Context, query *GetChatQuery) (*dtos.ChatDTO, error) {
 	h.log.Info("GetChatQueryHandler: Fetching chat by room ID", "room_id", query.RoomId)
 
-	chat, err := h.chatRepository.ChatChatByRoomId(query.RoomId)
+	chat, err := h.chatRepository.ChatChatByRoomId(query.RoomId, true)
 	if err != nil {
 		h.log.Error("GetChatQueryHandler: Failed to fetch chat by room ID", "error", err)
 		return nil, err

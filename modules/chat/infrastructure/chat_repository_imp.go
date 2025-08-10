@@ -29,13 +29,21 @@ func (r *ChatRepositoryImp) CreateRoom(chat *domain.Chat) (*domain.Chat, error) 
 	return chat, nil
 }
 
-func (r *ChatRepositoryImp) ChatChatByRoomId(roomId string) (*domain.Chat, error) {
+func (r *ChatRepositoryImp) ChatChatByRoomId(roomId string, loadMessage bool) (*domain.Chat, error) {
 	var chat domain.Chat
-	if err := r.chatDbContext.GetModelDB(&chat).
-		Preload("Messages").
-		Where("room_id = ?", roomId).
-		First(&chat).Error; err != nil {
+	db := r.chatDbContext.GetModelDB(&chat)
+	if loadMessage {
+		db = db.Preload("Messages")
+	}
+	if err := db.Where("room_id = ?", roomId).First(&chat).Error; err != nil {
 		return nil, err
 	}
 	return &chat, nil
+}
+
+func (r *ChatRepositoryImp) UpdateChat(chat *domain.Chat) (*domain.Chat, error) {
+	if err := r.generic.Update(chat, r.ctx); err != nil {
+		return nil, err
+	}
+	return chat, nil
 }

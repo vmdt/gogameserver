@@ -10,6 +10,7 @@ func Startup() fx.Option {
 	return fx.Options(
 		fx.Provide(infrastructure.NewChatDbContext),
 		fx.Provide(infrastructure.NewChatRepositoryImp),
+		fx.Provide(infrastructure.NewChatMessageRepositoryImp),
 		fx.Invoke(configurations.ConfigMigrations),
 		fx.Invoke(configurations.ConfigEndpoints),
 		fx.Invoke(configurations.ConfigChatMediators),

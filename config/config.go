@@ -12,14 +12,15 @@ import (
 	elastic "github.com/vmdt/gogameserver/pkg/elasticsearch"
 	"github.com/vmdt/gogameserver/pkg/logger"
 	"github.com/vmdt/gogameserver/pkg/postgresgorm"
+	"github.com/vmdt/gogameserver/pkg/rabbitmq"
 	redis2 "github.com/vmdt/gogameserver/pkg/redis"
 )
 
 var configPath string
 
 type Config struct {
-	Logger *logger.LoggerConfig `mapstructure:"logger"`
-	// Rabbitmq   *rabbitmq.RabbitMQConfig         `mapstructure:"rabbitmq"`
+	Logger     *logger.LoggerConfig             `mapstructure:"logger"`
+	Rabbitmq   *rabbitmq.RabbitMQConfig         `mapstructure:"rabbitmq"`
 	Echo       *echoserver.EchoConfig           `mapstructure:"echo"`
 	PostgresDb *postgresgorm.GormPostgresConfig `mapstructure:"postgresDb"`
 	Redis      *redis2.RedisOptions             `mapstructure:"redis"`
@@ -30,7 +31,7 @@ func InitConfig() (
 	*Config,
 	*logger.LoggerConfig,
 	*postgresgorm.GormPostgresConfig,
-	// *rabbitmq.RabbitMQConfig,
+	*rabbitmq.RabbitMQConfig,
 	*echoserver.EchoConfig,
 	*redis2.RedisOptions,
 	*elastic.ElasticOptions,
@@ -60,7 +61,7 @@ func InitConfig() (
 			//https://stackoverflow.com/questions/18537257/how-to-get-the-directory-of-the-currently-running-file
 			d, err := dirname()
 			if err != nil {
-				return nil, nil, nil, nil, nil, nil, err
+				return nil, nil, nil, nil, nil, nil, nil, err
 			}
 
 			configPath = d
@@ -73,14 +74,14 @@ func InitConfig() (
 	viper.SetConfigType("json")
 
 	if err := viper.ReadInConfig(); err != nil {
-		return nil, nil, nil, nil, nil, nil, errors.Wrap(err, "viper.ReadInConfig")
+		return nil, nil, nil, nil, nil, nil, nil, errors.Wrap(err, "viper.ReadInConfig")
 	}
 
 	if err := viper.Unmarshal(cfg); err != nil {
-		return nil, nil, nil, nil, nil, nil, errors.Wrap(err, "viper.Unmarshal")
+		return nil, nil, nil, nil, nil, nil, nil, errors.Wrap(err, "viper.Unmarshal")
 	}
 
-	return cfg, cfg.Logger, cfg.PostgresDb, cfg.Echo, cfg.Redis, cfg.Elastic, nil
+	return cfg, cfg.Logger, cfg.PostgresDb, cfg.Rabbitmq, cfg.Echo, cfg.Redis, cfg.Elastic, nil
 
 }
 
