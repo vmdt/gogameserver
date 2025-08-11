@@ -18,17 +18,19 @@ type RabbitMQConfig struct {
 	ExchangeName string `mapstructure:"exchange_name"`
 	Kind         string `mapstructure:"kind"`
 	Uri          string `mapstructure:"uri"`
+	VHost        string `mapstructure:"vhost"`
 }
 
 func NewRabbitMQConn(cfg *RabbitMQConfig, ctx context.Context) (*amqp.Connection, error) {
 	var connAddr string
 	if cfg.Uri == "" {
 		connAddr = fmt.Sprintf(
-			"amqp://%s:%s@%s:%d/",
+			"amqp://%s:%s@%s:%d/%s",
 			cfg.User,
 			cfg.Password,
 			cfg.Host,
 			cfg.Port,
+			cfg.VHost,
 		)
 	} else {
 		connAddr = cfg.Uri
