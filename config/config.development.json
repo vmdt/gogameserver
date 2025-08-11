@@ -21,5 +21,13 @@
     },
     "elastic": {
         "url": "http://localhost:9200"
+    },
+    "rabbitmq": {
+        "host": "localhost",
+        "port": 5672,
+        "user": "admin",
+        "password": "password",
+        "exchange_name": "gogameserver",
+        "kind": "direct"
     }
 }

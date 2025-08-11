@@ -51,7 +51,21 @@ services:
     depends_on:
       - elasticsearch
 
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: gogameserver_rabbitmq
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: password
+    ports:
+      - "5672:5672"   # AMQP
+      - "15672:15672" # Management UI
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
 volumes:
   postgres_data:
   redis_data:
   esdata:
+  rabbitmq_data:

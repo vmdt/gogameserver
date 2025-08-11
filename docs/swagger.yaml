@@ -1,3 +1,4 @@
+basePath: /
 definitions:
   battleship_options_cmd.UpdateBattleshipOptionsCmd:
     properties:
@@ -31,6 +32,29 @@ definitions:
       who_go_first:
         description: '0: random, 1: player1, 2: player2'
         type: integer
+    type: object
+  commands.ChatMessageCommand:
+    properties:
+      content:
+        type: string
+      is_log:
+        default: false
+        type: boolean
+      sender_id:
+        type: string
+    required:
+    - content
+    - sender_id
+    type: object
+  commands.CreateChatCommand:
+    properties:
+      game_type:
+        default: 1
+        type: integer
+      room_id:
+        type: string
+    required:
+    - room_id
     type: object
   commands.ExternalGrantCommand:
     properties:
@@ -191,6 +215,41 @@ definitions:
         description: '0: random, 1: player1, 2: player2'
         type: integer
     type: object
+  dtos.ChatDTO:
+    properties:
+      created_at:
+        type: string
+      game_type:
+        description: 1 = Battleship
+        type: integer
+      id:
+        type: string
+      messages:
+        items:
+          $ref: '#/definitions/dtos.ChatMessageDTO'
+        type: array
+      room_id:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  dtos.ChatMessageDTO:
+    properties:
+      chat_id:
+        type: string
+      content:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: string
+      is_log:
+        type: boolean
+      sender_id:
+        type: string
+      updated_at:
+        type: string
+    type: object
   dtos.PlayerDTO:
     properties:
       created_at:
@@ -338,6 +397,9 @@ definitions:
     type: object
 info:
   contact: {}
+  description: API for Battleship game
+  title: Battleship API
+  version: "1.0"
 paths:
   /api/v1/boardgame/battleship:
     post:
@@ -502,6 +564,125 @@ paths:
       summary: Check Sunk Ship Status
       tags:
       - Board.Battleship
+  /api/v1/chat/rooms:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new chat room and returns the chat details.
+      parameters:
+      - description: Chat room details
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/commands.CreateChatCommand'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dtos.ChatDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a new chat room
+      tags:
+      - Chat
+  /api/v1/chat/rooms/{room_id}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a chat room by its ID and returns the chat details.
+      parameters:
+      - description: Chat room ID
+        in: path
+        name: room_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.ChatDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get chat room by ID
+      tags:
+      - Chat
+  /api/v1/chat/rooms/{room_id}/messages:
+    post:
+      consumes:
+      - application/json
+      description: Sends a chat message to a specific chat room and returns the updated
+        chat details
+      parameters:
+      - description: Chat room ID
+        in: path
+        name: room_id
+        required: true
+        type: string
+      - description: Chat message details
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/commands.ChatMessageCommand'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.ChatDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Send a chat message
+      tags:
+      - Chat
   /api/v1/identity/google:
     post:
       consumes:
@@ -890,4 +1071,15 @@ paths:
       summary: Update room status
       tags:
       - Room
+securityDefinitions:
+  ApiKeyAuth:
+    description: Provide your API key here.
+    in: header
+    name: X-API-Key
+    type: apiKey
+  BearerAuth:
+    description: Type "Bearer" followed by a space and then your token.
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

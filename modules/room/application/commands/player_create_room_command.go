@@ -6,6 +6,8 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/mehdihadeli/go-mediatr"
+	chat_commands "github.com/vmdt/gogameserver/modules/chat/application/commands"
+	chat_dtos "github.com/vmdt/gogameserver/modules/chat/application/dtos"
 	"github.com/vmdt/gogameserver/modules/player/application/commands"
 	player_dtos "github.com/vmdt/gogameserver/modules/player/application/dtos"
 	battleship_options_cmd "github.com/vmdt/gogameserver/modules/room/application/commands/battleship_options"
@@ -98,6 +100,17 @@ func (h *PlayerCreateRoomHandler) Handle(ctx context.Context, command *PlayerCre
 			h.log.Error("Failed to create battleship options", "error", err)
 			return nil, err
 		}
+	}
+
+	createRoomChat := chat_commands.NewCreateChatCommand(
+		room.ID.String(),
+		1, // battleship
+	)
+
+	_, err = mediatr.Send[*chat_commands.CreateChatCommand, *chat_dtos.ChatDTO](ctx, createRoomChat)
+	if err != nil {
+		h.log.Error("Failed to create chat for room", "error", err)
+		return nil, err
 	}
 
 	userId := auth.GetUserId(ctx)
