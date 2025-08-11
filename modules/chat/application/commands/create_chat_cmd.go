@@ -38,11 +38,7 @@ func NewCreateChatCommandHandler(log logger.ILogger, ctx context.Context, chatRe
 
 func (h *CreateChatCommandHandler) Handle(ctx context.Context, command *CreateChatCommand) (*dtos.ChatDTO, error) {
 	// check if the room chat already exists
-	chat, err := h.chatRepository.ChatChatByRoomId(command.RoomId, false)
-	if err != nil {
-		h.log.Error("CreateChatCommandHandler: Failed to check existing chat room", "error", err)
-		return nil, err
-	}
+	chat, _ := h.chatRepository.ChatChatByRoomId(command.RoomId, false)
 	if chat != nil {
 		h.log.Warn("CreateChatCommandHandler: Chat room already exists", "room_id", command.RoomId)
 		return nil, errors.New("chat room already exists")
