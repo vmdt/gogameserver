@@ -211,7 +211,7 @@ func CheckSunkShipStatus(
 			return c.JSON(http.StatusBadRequest, "Validation error")
 		}
 
-		cmd := queries.NewCheckSunkShipStatusQuery(query.PlayerId, query.RoomId)
+		cmd := queries.NewCheckSunkShipStatusQuery(query.RoomId, query.PlayerId)
 		result, err := mediatr.Send[*queries.CheckSunkShipStatusQuery, *dtos.SunkShipsDTO](ctx, cmd)
 		if err != nil {
 			log.Error("Failed to check sunk ship status", "error", err)
